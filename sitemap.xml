@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://mryslab.github.io/bits-n-bots/</loc>
+         <lastmod>2023-12-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://mryslab.github.io/bits-n-bots/2023/12/14/welcome/</loc>
+         <lastmod>2023-12-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://mryslab.github.io/bits-n-bots/archive/2023/</loc>
+         <lastmod>2023-12-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://mryslab.github.io/bits-n-bots/category/welcome/</loc>
+         <lastmod>2023-12-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+</urlset>
