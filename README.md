@@ -1,1 +1,1 @@
-This is home for my blog.
+This is the home for my blog.
