@@ -1,10 +1,10 @@
 site_name: "Bits 'n Bots"
-site_description: 'What is happening in the lab!'
+site_description: "Mr. Y's Lab blog."
 site_author: 'Alan Yorinks'
 site_url: 'https://mryslab.github.io/bits-n-bots'
 
 copyright: >
-  Copyright &copy; 2023 Alan Yorinks
+  Copyright &copy; 2023-2024 Alan Yorinks
 
 theme:
   name: 'material'
@@ -35,6 +35,7 @@ plugins:
       blog_dir: .
   - social
   - search
+  - open-in-new-tab
 
 
 extra:
@@ -46,3 +47,9 @@ extra:
       link: mailto:MisterYsLab@gmail.com
     - icon: fontawesome/brands/github
       link: https://github.com/MrYsLab
+    - icon: fontawesome/brands/bluesky
+      link: https://bsky.app/profile/mryslab.bsky.social
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
