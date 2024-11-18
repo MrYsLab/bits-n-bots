@@ -12,7 +12,23 @@ Over the past few years, I've been developing the
 Telemetrix family of libraries. These libraries, 
 designed to facilitate microcontroller programming, allow you to 
 control and monitor a variety of microcontrollers through a 
-standardized set of Python3  client APIs and their associated servers.
+standardized set of Python3  client APIs and their associated servers that
+are microcontroller resident.
+
+The Telemetrix architecture is not just simple and consistent, 
+but also highly extensible. It empowers you to easily add new functionality
+and support for future microprocessors and hardware devices, 
+giving you full control over your development process.
+
+Except for the Raspberry Pi Pico, the servers are all written using
+Arduino Cores as their basis. This allows for a high degree of commonality between 
+the servers, simplifies adding support for a new microprocessor, and allows for 
+integrating Arduino device libraries.
+
+The client APIs are designed with a focus on 
+efficiency and productivity, sharing many common features. 
+This makes it a breeze to port code written for one microprocessor 
+to another, saving you time and effort.
 
 Currently, Telemetrix supports the:
 
@@ -21,15 +37,9 @@ Currently, Telemetrix supports the:
 * [Arduino Nano RP2040 Connect ](https://mryslab.github.io/telemetrix-nano-2040-wifi/)
 * [ESP8266](https://mryslab.github.io/telemetrix/)
 * [ESP32](https://mryslab.github.io/telemetrix-esp32/)
-* [Raspberry Pi Pico](https://mryslab.github.io/telemetrix-rpi-pico/)
+* [Raspberry Pi Pico (Raspberry Pi C++ SDK-based)](https://mryslab.github.io/telemetrix-rpi-pico/)
 * [Raspberry Pi Pico-W](https://mryslab.github.io/telemetrix-rpi-pico-w/)
 * [STM32 Boards (i.e. Blackpill)](https://mryslab.github.io/telemetrix/)
-
-My primary motivation in developing Telemetrix was to have a 
-simple, extensible, and consistent architecture. 
-This architecture allowed me to easily add new functionality 
-and support for future microprocessors. This flexibility empowers you 
-to control and monitor a variety of microcontrollers.
 
 # Who Is This Series For?
 
