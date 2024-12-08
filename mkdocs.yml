@@ -14,25 +14,30 @@ theme:
   palette:
 
 
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+  features:
+    - navigation.footer
+
+
+
     # Palette toggle for dark mode
     - scheme: slate
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
 
-    # Palette toggle for light mode
-    - scheme: default
-      toggle:
-        icon: material/brightness-7
-
-
-        name: Switch to dark mode
-
-
 
 plugins:
   - blog:
       blog_dir: .
+      blog_toc: true
+      post_excerpt_separator: <!-- more -->
+      post_excerpt: required
+      post_readtime: true
+
   - social
   - search
   - open-in-new-tab
@@ -53,3 +58,5 @@ extra:
 markdown_extensions:
   - attr_list
   - md_in_html
+  - toc:
+      permalink: true

@@ -27,3 +27,4 @@ and found it highly stable and easy to use. Now that they support blog creation,
 I will give it a go. My hope is that it will encourage me to blog on a more regular 
 basis than I have in the past.
 Stay tuned!
+<!-- more -->
