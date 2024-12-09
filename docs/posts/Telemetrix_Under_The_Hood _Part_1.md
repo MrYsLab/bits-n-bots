@@ -55,8 +55,7 @@ To uncover Telemetrix internals, we will be exploring:
 * Telemetrix Server File Layout
 * Telemetrix Client File Layout
 * Telemetrix Command And Message Structure.
-* Telemetrix Concurrency
-* Adding Support For The [MobaTools Stepper Library](https://github.com/MicroBahner/MobaTools)
+* Finally, we will look at an end-to-end example to tie things together.
 
 In the next post we will explore the Telemetrix server file layout.
 

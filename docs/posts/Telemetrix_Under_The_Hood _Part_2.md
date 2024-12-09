@@ -19,16 +19,15 @@ will be using the server built for the
 [Arduino UNO R4 Minima](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/master/examples/Minima/Minima.ino).
 
 <!-- more -->
-A Telemetrix server is a "fixed" Arduino sketch uploaded to a microcontroller.
-The server code is considered "fixed" in that it is uploaded to the microcontroller
-and is left unchanged. "Programming" of the microcontroller is performed by the 
-user writing a Python
-script constructed from a [Telemetrix Python API](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/).
+The server code is considered "fixed" in that it is 
+uploaded to the microcontroller and left unchanged. The user programs the 
+microcontroller by writing a Python script constructed 
+from a  [Telemetrix Python API](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/).
 
-The only time the server sketch is modified is to add functionality or when it is
-first created to support a new microcontroller.
+The server sketch is only modified to add functionality or when 
+it is first created to support a new microcontroller.
 
-Now let's explore the code.
+Now, let's explore the code.
 
 ## Telemetrix Server Code Sections
 
@@ -40,23 +39,24 @@ All Telemetrix servers are [implemented using the following common sections](htt
 3. [Client Command Related Defines and Support](#client-command-related-defines-and-support)
 4. [Server Report Related Defines](#server-report-related-defines)
 5. [i2c Related Defines](#i2c-related-defines)
-6. [Pin Related Defines And Data Structures](#pin-related-defines-and-data-structures)
-7. [Feature Related Defines, Data Structures and Storage Allocation](#feature-related-defines-data-structures-and-storage-allocation)
+6. [Pin-Related Defines And Data Structures](#pin-related-defines-and-data-structures)
+7. [Feature Related Defines, Data Structures, and Storage Allocation](#feature-related-defines-data-structures-and-storage-allocation)
 8. [Command Functions](#command-functions)
-9. [Scanning Inputs, Generating Reports And Running Steppers](#scanning-inputs-generating-reports-and-running-steppers)
+9. [Scanning Inputs, Generating Reports, and Running Steppers](#scanning-inputs-generating-reports-and-running-steppers)
 10. [Setup and Loop](#setup-and-loop)
 
-**When discussing these sections, both code snippets and links to the
-code will be used.**
+**Both code snippets and links to the code will be used 
+when discussing these sections.**
 
 ### Feature Enabling Defines
 
-It is sometimes handy to be able to disable a built-in feature. When 
-debugging a modified server, you may wish to disable certain features.
+Disabling a built-in feature can be handy. 
+ For example, you may wish to disable certain features when debugging a
+modified server.
 
-Or perhaps, the current size of the server code is limiting adding a new
-feature. You can limit the server's foot print by removing support for
-unneeded features.
+Or perhaps the server code's current size limits the addition of a new feature. 
+You can limit the server's footprint by 
+removing support for unneeded features.
 
 A typical set of server features include:
 
@@ -66,7 +66,7 @@ A typical set of server features include:
 * Support for servo motors.
 * Support for stepper motors.
 * Support for HC-SR04 type ultrasonic distance sensors.
-* Support for DHT type temperature/humidity sensors.
+* Support for DHT-type temperature/humidity sensors.
 
 Let's look at the [feature enabling defines](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L35).
 
@@ -110,14 +110,14 @@ Let's look at the [feature enabling defines](https://github.com/MrYsLab/Telemetr
 #define I2C_ENABLED 1
 
 ```
-All the features are enabled for the UNO R4 Minima, with the exception of stepper
-motor support. The define for this feature is commented out. The reason for this
-is the AccelStepper library used to implement this feature, does 
-not yet function with Arduino UNO R4 boards. 
+All the features are enabled for the UNO R4 Minima except stepper
+motor support. The #define for this feature is commented out because 
+the AccelStepper library used to implement this feature does not yet function with Arduino UNO R4 boards.
 
-In a future article, we will implement the feature using a differnt stepper motor
-library.
-We use the feature defines to conditionally 
+We will implement the feature in a future article
+using a different stepper motor library. 
+
+Note that feature defines conditionally 
 [include the required header files](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L74) for
 the feature support libraries.
 
@@ -153,15 +153,17 @@ the feature support libraries.
 ```
 
 ### Arduino ID
-For microcontrollers that use a Serial/USB data transport, Telemetrix defaults to 
-using an auto-discovery scheme, to find the COM port that the microcontroller is
-connected to. 
+For microcontrollers that use a serial/USB data transport, 
+Telemetrix defaults to using an auto-discovery scheme to find the 
+COM port to which the microcontroller is connected.
 
-You may also manually specify the COM port in your application, but this is not
-always effective, since the COM port assignment by the operating system may 
-dynamically change from run to run.
+The Arduino ID helps to automatically discover and connect to a 
+specific microcontroller.
 
-The Arduino ID helps to identify the COM port in use by a specific microcontroller.
+You may also manually specify the COM port in your application, 
+but this is not always effective since the operating system's COM port 
+assignment may dynamically change from run to run.
+
 
 ```aiignore
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -178,18 +180,16 @@ The Arduino ID helps to identify the COM port in use by a specific microcontroll
 ```
 
 ### Client Command Related Defines and Support
-For each command that the server supports, a command ID is defined.
-[For the Arduino UNO R4 Minima](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L119), 
-there are 58 commands defined.
 
-Each command has an associated function used to process the command.
-Each command handler is initially specified using [forward referencing](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L188),
-to simplify
-compilation. The actual handlers are defined further down the file. By using forward
-referencing, a [command table](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L324), 
-consisting of an array of pointers to the command 
-functions, can
-be built at the top of the file.
+For the [For the Arduino UNO R4 Minima](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L119), 58 commands are defined.
+A command ID is defined for each command that the server supports.
+
+Each command has an associated function used to process it. 
+Each command handler is initially specified using [forward referencing](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L188)
+to simplify compilation. The actual handlers are defined further down the 
+file. By using forward referencing, a [forward referencing](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L188) consisting of an array 
+of pointers to the command functions can be built at the top of the file.
+
 
 **_IMPORTANT NOTE:_**
 
@@ -199,7 +199,7 @@ new command, add a new ID at the bottom of the command defines.**
 
 ### Server Report Related Defines
 
-A server report transmits information, such an input value change, or perhaps a reply 
+A server report transmits information, such as an input value change or a reply 
 to a client informational request.
 
 Each report contains a report ID. These IDs are defined
@@ -309,10 +309,10 @@ struct pin_descriptor
 pin_descriptor the_digital_pins[MAX_DIGITAL_PINS_SUPPORTED];
 
 ```
-### Feature Related Defines, Data Structures and Storage Allocation
+### Feature Related Defines, Data Structures, And Storage Allocation
 
 This [section of code](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L567)
-contains the code to manage features such as servos, DHT tempertaure/humidity
+contains the code to manage features such as servos, DHT temperature/humidity
 devices, sonar distance sensors, stepper motors, and onewire devices.
 
 ```aiignore
@@ -421,20 +421,24 @@ void digital_write()
     digitalWrite(pin, value);
 }
 ```
-The command buffer contains the information sent from the client. This includes the
-pin number and the requested value for that pin.
+The command buffer contains the information sent from the client, including the pin 
+number and the requested value for that pin.
 
 The Arduino Core digital write command, digitalWrite,  is called using the
 information sent from the client.
 
-### Scanning Inputs, Generating Reports And Running Steppers
+### Scanning Inputs, Generating Reports, And Running Steppers
 
-After setting a pin as an input pin, Telemetrix will poll the pin for any changes.
-It does so for [digital inputs](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L1751),
-[analog inputs](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L1785), 
-[HC-SR04 distance sensors](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L1836), 
-[DHT temperature sensors](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L1873),
-and if required will keep a stepper motor running.
+
+
+After setting a pin as an input pin, Telemetrix polls the pin 
+for any changes. It does so for
+[digital inputs](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L1751), 
+[analog inputs](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L1785),
+[HC-SR04 distance sensors](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L1836),
+and [DHT temperature sensors](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L1873),
+and if required, 
+will keep a stepper motor running.
 
 Let's look at the code for the digital input scanner.
 
@@ -472,17 +476,17 @@ void scan_digital_inputs()
     }
 }
 ```
-The scanner loops through all possible digital pins, checking to see if a pin is
-configured as a digital input. If it is, the scanner next checks to see if 
-reporting is enabled for the pin and if it is, the pin is read.
+The scanner loops through all possible digital pins, checking whether a 
+pin is configured as a digital input. 
+If it is, the scanner next checks to see if 
+reporting is enabled for the pin, and if it is, the pin is read.
+The value read is compared to the last changed value, 
+and if they differ, the new value is stored in the 
+[digital pins table](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L546).
+Finally, a report message is constructed and sent over the 
+serial link to the Python client.
+The code is similar to the other scanners.
 
-The value read is compared to the last changed value and if they differ, the new
-value is stored in the [digital pins table](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L546).
-
-Finally a report message is constructed and sent over the serial link to the Python
-client.
-
-The code is similar for the other scanners.
 
 ### Setup and Loop
 
@@ -580,10 +584,10 @@ starts the serial link, and then flashes the board LED 4 times.
 The [loop function](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L2063) checks to see if a client command needs to be processed
 by calling [get_next_command](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L1631).
 
-If reporting is enabled, it calls the various scanners, and finally, if required
-will send requested commands to the configured stepper motors.
+If reporting is enabled, it calls the various scanners and, if necessary, sends the requested commands 
+to the configured stepper motors.
 
 ## The Next Posting
 
-This completes the discussion of the Telemetrix server file. In the next posting
+This completes the discussion of the Telemetrix server file. In the next post,
 we will discuss the Python API class.
