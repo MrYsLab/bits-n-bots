@@ -1,6 +1,6 @@
 ---
 draft: false
-date: 2024-11-18
+date: 2024-12-10
 categories:
   - Telemetrix Internals
 comments: true
@@ -50,12 +50,14 @@ Currently, Telemetrix supports the:
 * [Raspberry Pi Pico-W](https://mryslab.github.io/telemetrix-rpi-pico-w/)
 * [STM32 Boards (i.e. Blackpill)](https://mryslab.github.io/telemetrix/)
 
-To uncover Telemetrix internals, we will be exploring:
+To uncover Telemetrix internals, we will be using
+the HC-SR04 ultrasonic sensor feature to explore the following:
 
+* Telemetrix Command And Message Structure.
 * Telemetrix Server File Layout
 * Telemetrix Client File Layout
-* Telemetrix Command And Message Structure.
-* Finally, we will look at an end-to-end example to tie things together.
 
-In the next post we will explore the Telemetrix server file layout.
+
+
+In the next post we will explore the Telemetrix Command And Message Structure.
 
