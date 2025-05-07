@@ -23,8 +23,11 @@ is highly extensible. It empowers you to easily add new functionality and
 support for future microprocessors and hardware devices, giving you complete 
 control over your development process.
 
-Except for the Raspberry Pi Pico, the servers are all written using
-Arduino Cores as their basis. 
+Except for the Raspberry Pi Pico, all Telemetrix servers are based upon
+Arduino Cores. This includes the server for
+the Raspberry Pi 
+Pico W. 
+
 An Arduino Core contains all the software and tools to provide a software 
 abstraction 
 layer for a particular processor. 
