@@ -24,8 +24,7 @@ so we chose it to highlight a Telemetrix server design.
 However, all Telemetrix servers are remarkably similar. 
 The discussion below would be almost identical if any other server were chosen.
 Once you learn about one Telemetrix server, you are fully prepared to understand them all.
-In this post, we will examine the file's structure, major data structures, 
-and internal workings.
+This post will examine the file's structure, major data structures, and internal workings.
 
 
 
@@ -48,8 +47,8 @@ of adding a new feature, such as:
 * Generating reports for data changes.
 
 All these things will be uncovered as we proceed with the discussion.
-To make the HC-SR04-specific discussions easier to 
-find within the post, search for the heading **_SONAR SIDEBAR_**. 
+Search for the heading _**SONAR SIDEBAR**_ to make the HC-SR04-specific 
+discussions easier to find within the post.
 
 
 <!-- more -->
@@ -57,11 +56,11 @@ find within the post, search for the heading **_SONAR SIDEBAR_**.
 
 ### Using An Established Arduino Library For Device Support
 
-When adding support for a new device, you have the choice to create 
-your own Arduino library or use an existing library. Using an 
-existing support library has many advantages. You can evaluate the code 
-to ensure that it does not block for long periods of time and that it 
-provides all the functionality you desire.
+When adding support for a new device, you have the choice to create your own 
+Arduino library or use an existing library. Using an 
+existing support library has many advantages. You can evaluate 
+the code to ensure that it does not block for long periods and provides 
+all the functionality you desire.
 
 #### _SONAR SIDEBAR_
 
@@ -113,13 +112,14 @@ section of this document.
 ## Telemetrix Server File Layout
 
 All Telemetrix servers use a very similar file layout. 
-For discussion purposes, we will use the server built for the 
-[Arduino UNO R4 Minima](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/master/examples/Minima/Minima.ino).
+We will use the server built for the 
+[Arduino UNO R4 Minima](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/master/examples/Minima/Minima.ino)
+for discussion purposes.
 
-The server code is considered "fixed" in that it is 
+The server code is considered "fixed" because it is 
 uploaded to the microcontroller and left unchanged. 
 
-To change the behavior of the Arduino, the 
+To change the behavior of the Arduino or other microcontroller, the 
 Telemetrix client sends messages to the server. 
 The server is implemented to wait for and interpret
 commands from the client and then act upon them.
@@ -152,13 +152,14 @@ when discussing these sections.**
 
 ### Feature Enabling Defines
 
-Disabling a built-in feature can be handy. 
- For example, you may wish to disable certain features when debugging a
-modified server.
+The ability to turn a built-in feature on or off can be handy. 
+For example, you may turn off certain features when debugging a modified server.
 
-Or perhaps the server code's current size limits adding a new feature.  
-You can limit the server's footprint by 
-removing support for unneeded features.
+
+ 
+If the new feature causes the server to run out of programming memory space, 
+you can control
+the server's footprint by removing support for unneeded features.
 
 A typical set of server features include:
 
@@ -170,7 +171,7 @@ A typical set of server features include:
 * Support for HC-SR04 type ultrasonic distance sensors.
 * Support for DHT-type temperature/humidity sensors.
 
-Let's look at the [feature enabling defines](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L35).
+Let's look at the [feature-enabling #defines](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L35).
 
 ```aiignore
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
