@@ -58,9 +58,9 @@ discussions easier to find within the post.
 
 When adding support for a new device, you have the choice to create your own 
 Arduino library or use an existing library. Using an 
-existing support library has many advantages. You can evaluate 
-the code to ensure that it does not block for long periods and provides 
-all the functionality you desire.
+existing support library has many advantages. 
+You can evaluate the code to ensure it does not 
+block for long periods and provides all the desired functionality.
 
 #### _SONAR SIDEBAR_
 
@@ -134,7 +134,7 @@ Let's explore the code.
 ## Telemetrix Server Code Sections
 
 
-All Telemetrix servers are [implemented using the following common sections](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L19):
+All Telemetrix servers are [implemented using the following "common" sections](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L19):
 
 1. [Feature Enabling Defines](#feature-enabling-defines)
 2. [Arduino ID](#arduino-id)
@@ -285,12 +285,11 @@ For microcontrollers that use a serial/USB data transport,
 Telemetrix defaults to using an auto-discovery scheme to find the 
 COM port to which the microcontroller is connected.
 
-The Arduino ID helps to automatically discover and connect to a 
-specific microcontroller.
+The Arduino ID helps discover automatically and connect to a specific microcontroller.
 
-You may also manually specify the COM port in your application, 
-but this is not always effective since the operating system's COM port 
-assignment may dynamically change from run to run.
+You may also manually specify the COM port in your application. 
+However, this is not always effective because the operating system's COM port 
+assignment may change dynamically from run to run.
 
 
 ```aiignore
@@ -309,8 +308,11 @@ assignment may dynamically change from run to run.
 
 ### Client Command Related Defines and Support
 
-For the [For the Arduino UNO R4 Minima](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L119), 58 commands are defined.
-A command ID is defined for each command that the server supports.
+The [Arduino UNO R4 Minima](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L119)
+has 58 client commands defined. 
+Each command that the server supports has a command ID.
+
+The command IDs must match those mirrored in the Python client API code.
 
 ```aiignore
 
@@ -524,15 +526,15 @@ file.
 
 **_IMPORTANT NOTE:_**
 
-**The command IDs serve as an index into the command table. Therefore, when adding a
+**The command IDs are used as an index to reference a command in the command 
+table array. Therefore, when adding a
 new command, add a new ID at the bottom of the command defines.**
 
 The command IDs are mirrored in the Telemetrix client Python API.
 
 #### The Command Table
 
-With each new command we must add it to the command table.
-
+We must add each new command to the command table.
 ```aiignore
 // When adding a new command update the command_table.
 // The command length is the number of bytes that follow
@@ -617,11 +619,8 @@ command_descriptor command_table[] =
 
 #### _SONAR SIDEBAR_
 
-There are three methods that support the SONAR feature.
-They are **_sonar_new_**, **_sonar_disable_**, and **_sonar_enable_**.
-These will be discussed in the
-[Command Functions](#command-functions)
-section of this post.
+Three methods support the SONAR feature: **_sonar_new_**, **_sonar_disable_**, and **_sonar_enable_**.
+The [Command Functions](#command-functions) section of this post will discuss these.
 
 
 ### Server Report Related Defines
@@ -659,7 +658,7 @@ When adding an ID for a new report, add it before DEBUG_PRINT_REPORT.
 ```
 
 For example, if we want to create a new report called NEW_REPORT, we would
-add it after the FEATURES report and NEW_REPORT would be assigned an ID of 21.
+add it after the FEATURES report, and NEW_REPORT would be assigned an ID of 21.
 
 ```aiignore
 #define STEPPER_RUNNING_REPORT 18
@@ -673,15 +672,15 @@ Similar to command IDs, report IDs are mirrored in the Telemetrix Python API.
 
 ### I2C Related Defines
 This [section](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L485) 
-contains defines used for managing i2c ports. It specifies 
+contains #defines used for managing i2c ports. It specifies 
 the i2c SDA and SCL pins.
 
-Note that the Arduino UNO R4 Minima has only one i2c port. The UNO R4 Minima has 
-one I2C bus which is marked with SCL and SDA. They are
-shared with A4 (SDA) and A5 (SCL) which owners of previous UNOs are familiar with. 
+Note that the Arduino UNO R4 Minima has only one I2C port. Its one 
+I2C bus is marked with SCL and SDA. It is shared with A4 (SDA) 
+and A5 (SCL), which owners of previous UNOs are familiar with.
 
-The defines for a second i2c port are included for possible future development, but
-are not supported for the current version of the Arduino UNO R4 Minima.
+#defines for a second I2C port are included for possible future development, but 
+are not supported by the current version of the Arduino UNO R4 Minima.
 
 ```aiignore
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -778,11 +777,10 @@ uint8_t analog_sampling_interval = 19; // in milliseconds
 ```
 ### Feature Related Defines, Data Structures, And Storage Allocation
 
-This [section of code](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L567)
-contains the code to manage features such as servos, DHT temperature/humidity
-devices, sonar distance sensors, stepper motors, and onewire devices.
-It creates data structures to store information about each of the configured
-devices.
+This [section](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L567) contains the code to manage features such as 
+servos, DHT temperature/humidity devices, sonar distance sensors, 
+stepper motors, and onewire devices.
+
 
 ```aiignore
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -901,9 +899,9 @@ uint8_t sonar_scan_interval = 33;    // Milliseconds between sensor pings
 #endif
 ```
 
-The server supports upto a maximum of 6 sensors. Each sensor has an entry into an array
-that stores the sensor's trigger pin, the last value read, and a pointer to its 
-associated NewPing instance.
+The server supports up to 6 sensors. Each sensor has an entry 
+into an array that stores its trigger pin, the last value read, 
+and a pointer to its associated NewPing instance.
 
 The scan interval is set to 33 milliseconds to allow for accurate distance measurement.
 
@@ -936,8 +934,7 @@ information sent from the client.
 
 
 
-After setting a pin as an input pin, Telemetrix polls the pin 
-for any changes. It does so for
+After setting a pin as input, Telemetrix polls the pin for any changes. It does so for
 [digital inputs](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L1751), 
 [analog inputs](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L1785),
 [HC-SR04 distance sensors](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L1836),
@@ -1094,5 +1091,5 @@ to the configured stepper motors.
 
 ## The Next Posting
 
-This completes the discussion of the Telemetrix server file. In the next post,
-we will discuss the Python API class.
+We've completed the discussion of the Telemetrix server file. 
+In the next post, we will discuss the Python API class.
