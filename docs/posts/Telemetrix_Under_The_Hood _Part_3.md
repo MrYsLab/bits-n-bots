@@ -1,33 +1,135 @@
 ---
 draft: false
-date: 2024-12-12
+date: 2024-12-14
 categories:
   - Telemetrix Internals
 comments: true
 ---
 
-![](../assets/images/under_the_hood.png){ width="450" }
+![](../assets/images/server.png)
+
+# Understanding The Telemetrix Server
+
+## Introduction
+
+Let's examine the 
+[Telemetrix server code](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/master/examples/Minima/Minima.ino) 
+for the Arduino UNO R4 Minima,
 
 
-# Telemetrix Server File Layout
+Why select the server for the Minima and not another board?
 
-All Telemetrix servers use a very similar file layout. Let's begin by exploring the code 
-for a typical Telemetrix server. For 
-discussion 
-purposes, we
-will be using the server built for the
-[Arduino UNO R4 Minima](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/master/examples/Minima/Minima.ino).
+The Minima is one of the newer boards in the Arduino family, 
+so we chose it to highlight a Telemetrix server design.
+However, all Telemetrix servers are remarkably similar. 
+The discussion below would be almost identical if any other server were chosen.
+Once you learn about one Telemetrix server, you are fully prepared to understand them all.
+In this post, we will examine the file's structure, major data structures, 
+and internal workings.
+
+
+
+### A Feature Reference Point
+
+![](../assets/images/HC-SR04.jpeg)
+
+One main reason for understanding the internal workings of a Telemetrix 
+server is to be able to add support for a new sensor or actuator.
+
+To this end, the HC-SR04 SONAR distance sensor illustrates the 
+areas of server code affected by adding sensor support. Adding actuator support
+is very similar to adding sensor support. 
+
+Why the HC-SR04? Because it highlights some of the finer points
+of adding a new feature, such as:
+
+* Device instantiation.
+* Continuous non-blocking timed polling of the device.
+* Generating reports for data changes.
+
+All these things will be uncovered as we proceed with the discussion.
+To make the HC-SR04-specific discussions easier to 
+find within the post, search for the heading **_SONAR SIDEBAR_**. 
+
 
 <!-- more -->
+
+
+### Using An Established Arduino Library For Device Support
+
+When adding support for a new device, you have the choice to create 
+your own Arduino library or use an existing library. Using an 
+existing support library has many advantages. You can evaluate the code 
+to ensure that it does not block for long periods of time and that it 
+provides all the functionality you desire.
+
+#### _SONAR SIDEBAR_
+
+The [NewPing](https://bitbucket.org/teckel12/arduino-new-ping/wiki/Home) 
+library was chosen to support the HC-SR04 SONAR feature. 
+It is mostly non-blocking and has a straightforward API, 
+making its integration into Telemetrix fairly simple.
+
+Let's take a look at a basic example provided by NewPing.
+
+```aiignore
+// ---------------------------------------------------------------------------
+// Example NewPing library sketch that does a ping about 20 times per second.
+// ---------------------------------------------------------------------------
+
+#include <NewPing.h>
+
+#define TRIGGER_PIN  12  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_PIN     11  // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define MAX_DISTANCE 200 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
+
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
+
+void setup() {
+  Serial.begin(115200); // Open serial monitor at 115200 baud to see ping results.
+}
+
+void loop() {
+  delay(50);                     // Wait 50ms between pings (about 20 pings/sec). 29ms should be the shortest delay between pings.
+  Serial.print("Ping: ");
+  Serial.print(sonar.ping_cm()); // Send ping, get distance in cm and print result (0 = outside set distance range)
+  Serial.println("cm");
+}
+```
+Essentially, an instance of NewPing is created for each SONAR sensor. 
+Then, a NewPing method, **_ping_cm()_**, reads the sensor.
+
+For HC-SR04 sensors, a read may not be performed more than 
+once every 29 milliseconds to get accurate reads. 
+That is the reason for the 50-millisecond delay in the example above.
+
+Telemetrix provides a non-blocking scheme to read the sensor continuously. 
+This scheme will be covered in the
+[Scanning Inputs](#scanning-inputs-generating-reports-and-running-steppers)
+section of this document.
+
+
+
+## Telemetrix Server File Layout
+
+All Telemetrix servers use a very similar file layout. 
+For discussion purposes, we will use the server built for the 
+[Arduino UNO R4 Minima](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/master/examples/Minima/Minima.ino).
+
 The server code is considered "fixed" in that it is 
-uploaded to the microcontroller and left unchanged. The user programs the 
-microcontroller by writing a Python script constructed 
-from a  [Telemetrix Python API](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/).
+uploaded to the microcontroller and left unchanged. 
 
-The server sketch is only modified to add functionality or when 
-it is first created to support a new microcontroller.
+To change the behavior of the Arduino, the 
+Telemetrix client sends messages to the server. 
+The server is implemented to wait for and interpret
+commands from the client and then act upon them.
+A command may result in continuously monitoring 
+a pin or device for data changes. When a data change is detected, 
+the server may form a report message and autonomously send the report to the client.
 
-Now, let's explore the code.
+We will cover the client in the next post.
+
+Let's explore the code.
 
 ## Telemetrix Server Code Sections
 
@@ -54,7 +156,7 @@ Disabling a built-in feature can be handy.
  For example, you may wish to disable certain features when debugging a
 modified server.
 
-Or perhaps the server code's current size limits the addition of a new feature. 
+Or perhaps the server code's current size limits adding a new feature.  
 You can limit the server's footprint by 
 removing support for unneeded features.
 
@@ -112,10 +214,13 @@ Let's look at the [feature enabling defines](https://github.com/MrYsLab/Telemetr
 ```
 All the features are enabled for the UNO R4 Minima except stepper
 motor support. The #define for this feature is commented out because 
-the AccelStepper library used to implement this feature does not yet function with Arduino UNO R4 boards.
+the AccelStepper library used to implement this feature does not 
+yet function with Arduino UNO R4 boards.
 
 We will implement the feature in a future article
 using a different stepper motor library. 
+
+
 
 Note that feature defines conditionally 
 [include the required header files](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L74) for
@@ -152,6 +257,28 @@ the feature support libraries.
 
 ```
 
+#### _SONAR SIDEBAR_
+For the **HC-SR04**, the feature is enabled with:
+
+```aiignore
+// This will allow sonar support to be compiled into the sketch.
+// Comment this out to save sketch space for the UNO
+#define SONAR_ENABLED 1
+```
+
+With the **SONAR** feature enabled, the server includes the
+[NewPing](https://bitbucket.org/teckel12/arduino-new-ping/wiki/Home) Arduino library
+for feature support.
+
+```aiignore
+#ifdef SONAR_ENABLED
+#include <NewPing.h>
+#endif
+```
+
+When adding a new feature, you must add the new feature #define and use the #define to 
+include any required support libraries.
+
 ### Arduino ID
 For microcontrollers that use a serial/USB data transport, 
 Telemetrix defaults to using an auto-discovery scheme to find the 
@@ -184,22 +311,321 @@ assignment may dynamically change from run to run.
 For the [For the Arduino UNO R4 Minima](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L119), 58 commands are defined.
 A command ID is defined for each command that the server supports.
 
-Each command has an associated function used to process it. 
+```aiignore
+
+/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+/*         Client Command Related Defines and Support               */
+/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+
+// Commands Sent By The Client
+
+
+// Add commands retaining the sequential numbering.
+// The order of commands here must be maintained in the command_table.
+#define SERIAL_LOOP_BACK 0
+#define SET_PIN_MODE 1
+#define DIGITAL_WRITE 2
+#define ANALOG_WRITE 3
+#define MODIFY_REPORTING 4 // mode(all, analog, or digital), pin, enable or disable
+#define GET_FIRMWARE_VERSION 5
+#define ARE_U_THERE 6
+#define SERVO_ATTACH 7
+#define SERVO_WRITE 8
+#define SERVO_DETACH 9
+#define I2C_BEGIN 10
+#define I2C_READ 11
+#define I2C_WRITE 12
+#define SONAR_NEW 13
+#define DHT_NEW 14
+#define STOP_ALL_REPORTS 15
+#define SET_ANALOG_SCANNING_INTERVAL 16
+#define ENABLE_ALL_REPORTS 17
+#define RESET 18
+#define SPI_INIT 19
+#define SPI_WRITE_BLOCKING 20
+#define SPI_READ_BLOCKING 21
+#define SPI_SET_FORMAT 22
+#define SPI_CS_CONTROL 23
+#define ONE_WIRE_INIT 24
+#define ONE_WIRE_RESET 25
+#define ONE_WIRE_SELECT 26
+#define ONE_WIRE_SKIP 27
+#define ONE_WIRE_WRITE 28
+#define ONE_WIRE_READ 29
+#define ONE_WIRE_RESET_SEARCH 30
+#define ONE_WIRE_SEARCH 31
+#define ONE_WIRE_CRC8 32
+#define SET_PIN_MODE_STEPPER 33
+#define STEPPER_MOVE_TO 34
+#define STEPPER_MOVE 35
+#define STEPPER_RUN 36
+#define STEPPER_RUN_SPEED 37
+#define STEPPER_SET_MAX_SPEED 38
+#define STEPPER_SET_ACCELERATION 39
+#define STEPPER_SET_SPEED 40
+#define STEPPER_SET_CURRENT_POSITION 41
+#define STEPPER_RUN_SPEED_TO_POSITION 42
+#define STEPPER_STOP 43
+#define STEPPER_DISABLE_OUTPUTS 44
+#define STEPPER_ENABLE_OUTPUTS 45
+#define STEPPER_SET_MINIMUM_PULSE_WIDTH 46
+#define STEPPER_SET_ENABLE_PIN 47
+#define STEPPER_SET_3_PINS_INVERTED 48
+#define STEPPER_SET_4_PINS_INVERTED 49
+#define STEPPER_IS_RUNNING 50
+#define STEPPER_GET_CURRENT_POSITION 51
+#define STEPPER_GET_DISTANCE_TO_GO 52
+#define STEPPER_GET_TARGET_POSITION 53
+#define GET_FEATURES 54
+#define SONAR_SCAN_OFF 55
+#define SONAR_SCAN_ON 56
+#define BOARD_HARD_RESET 57
+```
+
+Each command ID has an associated command handler to process the command. 
 Each command handler is initially specified using [forward referencing](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L188)
-to simplify compilation. The actual handlers are defined further down the 
-file. By using forward referencing, a [forward referencing](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L188) consisting of an array 
-of pointers to the command functions can be built at the top of the file.
+to simplify compilation. 
+
+
+```
+/* Command Forward References*/
+
+// If you add a new command, you must add the command handler
+// here as well.
+
+extern void serial_loopback();
+
+extern void set_pin_mode();
+
+extern void digital_write();
+
+extern void analog_write();
+
+extern void modify_reporting();
+
+extern void get_firmware_version();
+
+extern void are_you_there();
+
+extern void servo_attach();
+
+extern void servo_write();
+
+extern void servo_detach();
+
+extern void i2c_begin();
+
+extern void i2c_read();
+
+extern void i2c_write();
+
+extern void sonar_new();
+
+extern void dht_new();
+
+extern void stop_all_reports();
+
+extern void set_analog_scanning_interval();
+
+extern void enable_all_reports();
+
+extern void reset_data();
+
+extern void init_pin_structures();
+
+extern void init_spi();
+
+extern void write_blocking_spi();
+
+extern void read_blocking_spi();
+
+extern void set_format_spi();
+
+extern void spi_cs_control();
+
+extern void onewire_init();
+
+extern void onewire_reset();
+
+extern void onewire_select();
+
+extern void onewire_skip();
+
+extern void onewire_write();
+
+extern void onewire_read();
+
+extern void onewire_reset_search();
+
+extern void onewire_search();
+
+extern void onewire_crc8();
+
+extern void set_pin_mode_stepper();
+
+extern void stepper_move_to();
+
+extern void stepper_move();
+
+extern void stepper_run();
+
+extern void stepper_run_speed();
+
+extern void stepper_set_max_speed();
+
+extern void stepper_set_acceleration();
+
+extern void stepper_set_speed();
+
+extern void stepper_get_distance_to_go();
+
+extern void stepper_get_target_position();
+
+extern void stepper_get_current_position();
+
+extern void stepper_set_current_position();
+
+extern void stepper_run_speed_to_position();
+
+extern void stepper_stop();
+
+extern void stepper_disable_outputs();
+
+extern void stepper_enable_outputs();
+
+extern void stepper_set_minimum_pulse_width();
+
+extern void stepper_set_3_pins_inverted();
+
+extern void stepper_set_4_pins_inverted();
+
+extern void stepper_set_enable_pin();
+
+extern void stepper_is_running();
+
+extern void get_features();
+
+extern void sonar_disable();
+
+extern void sonar_enable();
+
+extern void board_hard_reset();
+```
+
+The actual handlers are defined further down the 
+file. 
+
+
+
+
+
 
 
 **_IMPORTANT NOTE:_**
 
-**The Command IDs serve as an index into the command table. Therefore, when adding a
+**The command IDs serve as an index into the command table. Therefore, when adding a
 new command, add a new ID at the bottom of the command defines.**
+
+The command IDs are mirrored in the Telemetrix client Python API.
+
+#### The Command Table
+
+With each new command we must add it to the command table.
+
+```aiignore
+// When adding a new command update the command_table.
+// The command length is the number of bytes that follow
+// the command byte itself, and does not include the command
+// byte in its length.
+
+// The command_func is a pointer the command's function.
+struct command_descriptor
+{
+    // a pointer to the command processing function
+    void (*command_func)(void);
+};
+
+
+// An array of pointers to the command functions.
+// The list must be in the same order as the command defines.
+
+command_descriptor command_table[] =
+        {
+                {&serial_loopback},
+                {&set_pin_mode},
+                {&digital_write},
+                {&analog_write},
+                {&modify_reporting},
+                {&get_firmware_version},
+                {&are_you_there},
+                {&servo_attach},
+                {&servo_write},
+                {&servo_detach},
+                {&i2c_begin},
+                {&i2c_read},
+                {&i2c_write},
+                {&sonar_new},
+                {&dht_new},
+                {&stop_all_reports},
+                {&set_analog_scanning_interval},
+                {&enable_all_reports},
+                {&reset_data},
+                {&init_spi},
+                {&write_blocking_spi},
+                {&read_blocking_spi},
+                {&set_format_spi},
+                {&spi_cs_control},
+                {&onewire_init},
+                {&onewire_reset},
+                {&onewire_select},
+                {&onewire_skip},
+                {&onewire_write},
+                {&onewire_read},
+                {&onewire_reset_search},
+                {&onewire_search},
+                {&onewire_crc8},
+                {&set_pin_mode_stepper},
+                {&stepper_move_to},
+                {&stepper_move},
+                {&stepper_run},
+                {&stepper_run_speed},
+                {&stepper_set_max_speed},
+                {&stepper_set_acceleration},
+                {&stepper_set_speed},
+                (&stepper_set_current_position),
+                (&stepper_run_speed_to_position),
+                (&stepper_stop),
+                (&stepper_disable_outputs),
+                (&stepper_enable_outputs),
+                (&stepper_set_minimum_pulse_width),
+                (&stepper_set_enable_pin),
+                (&stepper_set_3_pins_inverted),
+                (&stepper_set_4_pins_inverted),
+                (&stepper_is_running),
+                (&stepper_get_current_position),
+                {&stepper_get_distance_to_go},
+                (&stepper_get_target_position),
+                (&get_features),
+                (&sonar_disable),
+                (&sonar_enable),
+                (&board_hard_reset),
+        };
+
+
+```
+
+#### _SONAR SIDEBAR_
+
+There are three methods that support the SONAR feature.
+They are **_sonar_new_**, **_sonar_disable_**, and **_sonar_enable_**.
+These will be discussed in the
+[Command Functions](#command-functions)
+section of this post.
 
 
 ### Server Report Related Defines
 
-A server report transmits information, such as an input value change or a reply 
+A _server report_ transmits information, such as an input value change or a reply 
 to a client informational request.
 
 Each report contains a report ID. These IDs are defined
@@ -242,10 +668,19 @@ add it after the FEATURES report and NEW_REPORT would be assigned an ID of 21.
 #define DEBUG_PRINT 99
 ```
 
+Similar to command IDs, report IDs are mirrored in the Telemetrix Python API.
+
 ### I2C Related Defines
 This [section](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L485) 
 contains defines used for managing i2c ports. It specifies 
 the i2c SDA and SCL pins.
+
+Note that the Arduino UNO R4 Minima has only one i2c port. The UNO R4 Minima has 
+one I2C bus which is marked with SCL and SDA. They are
+shared with A4 (SDA) and A5 (SCL) which owners of previous UNOs are familiar with. 
+
+The defines for a second i2c port are included for possible future development, but
+are not supported for the current version of the Arduino UNO R4 Minima.
 
 ```aiignore
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -282,6 +717,20 @@ input or output, whether the pin is enabled to generate a report, and the last
 value reported.
 
 ```aiignore
+/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+/*           Pin Related Defines And Data Structures                */
+/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+
+
+// Pin mode definitions
+
+// INPUT defined in Arduino.h = 0
+// OUTPUT defined in Arduino.h = 1
+// INPUT_PULLUP defined in Arduino.h = 2
+// The following are defined for arduino_telemetrix (AT)
+#define AT_ANALOG 3
+#define AT_MODE_NOT_SET 255
+
 // maximum number of pins supported
 #define MAX_DIGITAL_PINS_SUPPORTED 14
 #define MAX_ANALOG_PINS_SUPPORTED 6
@@ -295,7 +744,6 @@ value reported.
 // equivalent, this array is used to look up the value to use for the pin.
 int analog_read_pins[6] = {A0, A1, A2, A3, A4, A5};
 
-
 // a descriptor for digital pins
 struct pin_descriptor
 {
@@ -308,12 +756,32 @@ struct pin_descriptor
 // an array of digital_pin_descriptors
 pin_descriptor the_digital_pins[MAX_DIGITAL_PINS_SUPPORTED];
 
+// a descriptor for analog pins
+struct analog_pin_descriptor
+{
+    byte pin_number;
+    byte pin_mode;
+    bool reporting_enabled; // If true, then send reports if an input pin
+    int last_value;         // Last value read for input mode
+    int differential;       // difference between current and last value needed
+                            // to generate a report
+};
+
+// an array of analog_pin_descriptors
+analog_pin_descriptor the_analog_pins[MAX_ANALOG_PINS_SUPPORTED];
+
+unsigned long current_millis;  // for analog input loop
+unsigned long previous_millis; // for analog input loop
+uint8_t analog_sampling_interval = 19; // in milliseconds
+
 ```
 ### Feature Related Defines, Data Structures, And Storage Allocation
 
 This [section of code](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L567)
 contains the code to manage features such as servos, DHT temperature/humidity
 devices, sonar distance sensors, stepper motors, and onewire devices.
+It creates data structures to store information about each of the configured
+devices.
 
 ```aiignore
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -401,6 +869,42 @@ uint8_t stepper_run_modes[MAX_NUMBER_OF_STEPPERS];
 
 ### 
 ```
+
+#### SONAR SIDEBAR
+Specific to HC-SR04 management is this section:
+
+```aiignore
+// HC-SR04 Sonar Management
+#define MAX_SONARS 6
+
+#ifdef SONAR_ENABLED
+struct Sonar
+{
+    uint8_t trigger_pin;
+    unsigned int last_value;
+    NewPing *usonic;
+};
+
+// an array of sonar objects
+Sonar sonars[MAX_SONARS];
+
+byte sonars_index = 0; // index into sonars struct
+
+// used for scanning the sonar devices.
+byte last_sonar_visited = 0;
+#endif //SONAR_ENABLED
+
+#ifdef SONAR_ENABLED
+uint8_t sonar_scan_interval = 33;    // Milliseconds between sensor pings
+// (29ms is about the min to avoid = 19;
+#endif
+```
+
+The server supports upto a maximum of 6 sensors. Each sensor has an entry into an array
+that stores the sensor's trigger pin, the last value read, and a pointer to its 
+associated NewPing instance.
+
+The scan interval is set to 33 milliseconds to allow for accurate distance measurement.
 
 ### Command Functions
 
