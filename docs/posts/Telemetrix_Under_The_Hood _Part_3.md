@@ -223,9 +223,9 @@ using a different stepper motor library.
 
 
 
-Note that feature defines conditionally 
-[include the required header files](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L74) for
-the feature support libraries.
+Note that when a feature is activated, the 
+[required header files](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples
+/Minima/Minima.ino#L74) are #included.
 
 ```aiignore
 #ifdef SERVO_ENABLED
@@ -285,9 +285,9 @@ For microcontrollers that use a serial/USB data transport,
 Telemetrix defaults to using an auto-discovery scheme to find the 
 COM port to which the microcontroller is connected.
 
-The Arduino ID helps discover automatically and connect to a specific microcontroller.
+The Arduino ID aids in automatic microcontroller discovery and connection.
 
-You may also manually specify the COM port in your application. 
+Optionally, you may also manually specify the COM port in your application. 
 However, this is not always effective because the operating system's COM port 
 assignment may change dynamically from run to run.
 
@@ -668,7 +668,7 @@ add it after the FEATURES report, and NEW_REPORT would be assigned an ID of 21.
 #define DEBUG_PRINT 99
 ```
 
-Similar to command IDs, report IDs are mirrored in the Telemetrix Python API.
+Like command IDs, report IDs are mirrored in the Telemetrix Python API.
 
 ### I2C Related Defines
 This [section](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L485) 
@@ -679,7 +679,7 @@ Note that the Arduino UNO R4 Minima has only one I2C port. Its one
 I2C bus is marked with SCL and SDA. It is shared with A4 (SDA) 
 and A5 (SCL), which owners of previous UNOs are familiar with.
 
-#defines for a second I2C port are included for possible future development, but 
+The #defines for a second I2C port are included for possible future development, but 
 are not supported by the current version of the Arduino UNO R4 Minima.
 
 ```aiignore
@@ -709,7 +709,7 @@ TwoWire *current_i2c_port;
 
 ### Pin Related Defines And Data Structures
 This [section](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L509)
-contains the definitions for arrays of pin descriptors for both analog and 
+contains the definitions for arrays of pin descriptors for analog and 
 digital pins.
 
 Each pin descriptor contains information such as the pin number, if its mode is
@@ -869,7 +869,7 @@ uint8_t stepper_run_modes[MAX_NUMBER_OF_STEPPERS];
 ### 
 ```
 
-#### SONAR SIDEBAR
+#### _SONAR SIDEBAR_
 Specific to HC-SR04 management is this section:
 
 ```aiignore
@@ -942,52 +942,61 @@ and [DHT temperature sensors](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3
 and if required, 
 will keep a stepper motor running.
 
-Let's look at the code for the digital input scanner.
+#### _SONAR SIDEBAR_
+
+Let's look at the code for the _sonar_ scanner.
 
 ```aiignore
-void scan_digital_inputs()
+void scan_sonars()
 {
-    byte value;
+#ifdef SONAR_ENABLED
+    unsigned int distance;
 
-    // report message
-
-    // byte 0 = packet length
-    // byte 1 = report type
-    // byte 2 = pin number
-    // byte 3 = value
-    byte report_message[4] = {3, DIGITAL_REPORT, 0, 0};
-
-    for (int i = 0; i < MAX_DIGITAL_PINS_SUPPORTED; i++)
+    if (sonars_index)
     {
-        if (the_digital_pins[i].pin_mode == INPUT ||
-            the_digital_pins[i].pin_mode == INPUT_PULLUP)
+        sonar_current_millis = millis();
+        if (sonar_current_millis - sonar_previous_millis > sonar_scan_interval)
         {
-            if (the_digital_pins[i].reporting_enabled)
+            sonar_previous_millis = sonar_current_millis;
+            distance = sonars[last_sonar_visited].usonic->ping_cm();
+            if (distance != sonars[last_sonar_visited].last_value)
             {
-                // if the value changed since last read
-                value = (byte)digitalRead(the_digital_pins[i].pin_number);
-                if (value != the_digital_pins[i].last_value)
-                {
-                    the_digital_pins[i].last_value = value;
-                    report_message[2] = (byte)i;
-                    report_message[3] = value;
-                    Serial.write(report_message, 4);
-                }
+                sonars[last_sonar_visited].last_value = distance;
+
+                // byte 0 = packet length
+                // byte 1 = report type
+                // byte 2 = trigger pin number
+                // byte 3 = distance high order byte
+                // byte 4 = distance low order byte
+                byte report_message[5] = {4, SONAR_DISTANCE, sonars[last_sonar_visited].trigger_pin,
+                                          (byte)(distance >> 8), (byte)(distance & 0xff)
+                };
+                Serial.write(report_message, 5);
+            }
+            last_sonar_visited++;
+            if (last_sonar_visited == sonars_index)
+            {
+                last_sonar_visited = 0;
             }
         }
     }
+#endif
 }
 ```
-The scanner loops through all possible digital pins, checking whether a 
-pin is configured as a digital input. 
-If it is, the scanner next checks to see if 
-reporting is enabled for the pin, and if it is, the pin is read.
-The value read is compared to the last changed value, 
-and if they differ, the new value is stored in the 
-[digital pins table](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L546).
-Finally, a report message is constructed and sent over the 
-serial link to the Python client.
-The code is similar to the other scanners.
+The _scan_sonars_ function first checks to see if any sensors were enabled by checking 
+the _sonars_index_ variable.
+
+Next, it determines whether the scanning interval has elapsed and updates the 
+sonar_previous_millis variable to the current time.
+
+It then calls the _ping_cm_ function of the _usonic_ instance associated with the 
+sensor to retrieve the distance.
+
+If the current distance read differs from the last distance read, it updates 
+the _last_value_ variable to the current distance read, assembles, and sends a 
+report message to the client.
+
+Finally, it updates the sonars_index to the next sensor to be scanned.
 
 
 ### Setup and Loop
