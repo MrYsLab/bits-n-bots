@@ -903,7 +903,7 @@ The server supports up to 6 sensors. Each sensor has an entry
 into an array that stores its trigger pin, the last value read, 
 and a pointer to its associated NewPing instance.
 
-The scan interval is set to 33 milliseconds to allow for accurate distance measurement.
+The scan interval is set to 33 milliseconds for accurate distance measurement.
 
 ### Command Functions
 
@@ -1102,3 +1102,16 @@ to the configured stepper motors.
 
 We've completed the discussion of the Telemetrix server file. 
 In the next post, we will discuss the Python API class.
+
+## Summary For Adding New Features
+
+* Identify an existing device library or write your own.
+* Verify that the library is mostly non-blocking and meets your needs.
+* Add a [feature enabling #define to the server file.](#feature-enabling-defines)
+* Add [client command related defines.](#client-command-related-defines-and-support)
+* Add [report defines](#server-report-related-defines) if necessary.
+* Add feature-specific [data structures and storage allocation.](#feature-related-defines-data-structures-and-storage-allocation)
+* Add [command handlers](#command-functions) for each command.
+* Add [scanning functions](#scanning-inputs-generating-reports-and-running-steppers) 
+  for each feature if required.
+* Update [setup and loop functions](#setup-and-loop) to support the feature.
