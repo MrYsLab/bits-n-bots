@@ -10,9 +10,11 @@ comments: true
 
 ## The Telemetrix Python Client API
 
-In this post, we will explore the Python files that 
-implement the Telemetrix Python API. To help focus the discussion, 
-we will use the **HC-SR04 SONAR distance sensor** feature.
+In this post, we will explore the Telemetrix Python client API implementation
+for the Arduino UNO R4 Minima. To help focus the discussion, 
+we will again use the **HC-SR04 SONAR distance sensor** feature as an example.
+To make it easier to find the discussions about this feature, search for the _**SONAR 
+SIDEBAR**_ heading.
 
 However, before getting to the actual code, 
 let's explore two important design features that 
@@ -21,10 +23,162 @@ are integral to a Telemetrix Python API.
 
 <!-- more -->
 
-## Design Features
-### Concurrency
+## Design Features - Callbacks and Concurrency
 
-#### Threaded Concurrency
+### Callbacks
+
+When we wish to interact with a pin set up as input, we might write an Arduino
+sketch that looks something like this:
+
+```aiignore
+int ledPin = 6;    // LED connected to digital pin 13
+int inPin = 12;    // pushbutton connected to digital pin 7
+int val = 0;      // variable to store the read value
+
+void setup() {
+  pinMode(ledPin, OUTPUT);  // sets the digital pin 13 as output
+  pinMode(inPin, INPUT);    // sets the digital pin 7 as input
+}
+
+void loop() {
+  val = digitalRead(inPin);   // read the input pin
+  digitalWrite(ledPin, val);  // sets the LED to the button's value
+}
+```
+
+The pin mode for pin 7 is set to input mode in the _setup_ function, and the state
+of the pin is continuously read using a call to _digital_read_.
+
+To do something similar using Telemetrix, the Python application might look something 
+like:
+
+
+When establishing a pin as an input pin, the API requires you to specify a callback
+function or method. For example, let's look at _set_pin_mode_digital_input_.
+
+```aiignore
+def set_pin_mode_digital_input(self, pin_number, callback=None):
+    """
+    Set a pin as a digital input.
+
+    :param pin_number: arduino pin number
+
+    :param callback: callback function
+
+
+    callback returns a data list:
+
+    [pin_type, pin_number, pin_value, raw_time_stamp]
+
+    The pin_type for all digital input pins = 2
+
+    """
+```
+When a Telemetrix server detects a change in state for an input pin, it generates a
+report with the state change information for that pin.
+
+
+
+To process report messages received from the Telemetrix server, a Telemetrix client
+application employs a callback mechanism to process the data contained in the report 
+message.
+
+#### What Is A Callback
+
+
+
+
+
+A Telemetrix server transmits information asynchronously to a Telemetrix client via
+report messages. To process the information for these messages, you
+must provide a callback function. The callback function is registered
+typically when a pin mode established.
+
+For example, when setting a pin as a digital input, the callback function
+is registered as part of the call to 
+[set_pin_mode_digital_input.](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.set_pin_mode_digital_input)
+
+The callback data provided by the report is a list described in the API when 
+registering the callback.
+
+```aiignore
+def set_pin_mode_digital_input(self, pin_number, callback=None):
+        """
+        Set a pin as a digital input.
+
+        :param pin_number: arduino pin number
+
+        :param callback: callback function
+
+
+        callback returns a data list:
+
+        [pin_type, pin_number, pin_value, raw_time_stamp]
+
+        The pin_type for all digital input pins = 2
+
+        """
+```
+The report callback data contains the pin type being reported, the pin number,
+the reported changed pin value, and a timestamp for the report occurence.
+
+
+[An example](https://github.com/MrYsLab/telemetrix-uno-r4/blob/master/telemetrix_uno_r4/r4_minima_examples/threaded/mst_digital_input.py) 
+illustrates the use of callback.
+
+Here is the callback code within the example:
+
+```aiignore
+# Callback data indices
+CB_PIN_MODE = 0
+CB_PIN = 1
+CB_VALUE = 2
+CB_TIME = 3
+
+# variable to hold the last time a button state changed
+debounce_time = time.time()
+
+def the_callback(data):
+    """
+    A callback function to report data changes.
+    This will print the pin number, its reported value and
+    the date and time when the change occurred
+
+    :param data: [pin, current reported value, pin_mode, timestamp]
+    """
+    global debounce_time
+
+    # if the time from the last event change is > .2 seconds, the input is debounced
+    if data[CB_TIME] - debounce_time > .3:
+        date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(data[CB_TIME]))
+        print(f'Pin: {data[CB_PIN]} Value: {data[CB_VALUE]} Time Stamp: {date}')
+        debounce_time = data[CB_TIME]
+```
+The example provides for input "debouncing" often needed when monitoring a device
+such as a switch.
+
+#### Callbacks Versus Polling
+
+So why have the perceived added complexity of having to register and write a callback
+function? Why not just request the current value of the pin?
+
+The way Telemetrix is designed, once a pin is established as an input pin, the 
+server automatically monitors the pin, and only alerts the client when the state of the
+pin changes.
+
+Requesting a direct read or polling of a pin takes the time to build a poll request
+to be sent to the server. There is also the transmission time for the message to 
+arrive at the server, the time for the server to process the message, and build reply
+message. Finally, there is the time for the message to arrive back to the client and the
+client to process that message.
+
+It is therefore possible to miss a data change that occured during the process described
+above. By using a callback, you only receive information when a change happens and you 
+need
+not be wasting processor cycles used for polling.
+
+
+### Concurrency
 
 Concurrency refers to the ability of a system to execute 
 multiple tasks through simultaneous execution or time-sharing.
@@ -32,6 +186,11 @@ multiple tasks through simultaneous execution or time-sharing.
 The Telemetrix API can send commands to the server and, 
 at the same time, receive and process report data from the 
 server in a non-blocking fashion.
+
+Telemetrix uses Python threaded concurrency or Python asyncio concurrency depending
+upon the client API chosen.
+#### Threaded Concurrency
+
 
 To accomplish this Telemetrix employs Python threads in conjunction with a Python
 [deque](https://docs.python.org/3/library/collections.html#collections).
