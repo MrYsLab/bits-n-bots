@@ -20,6 +20,69 @@ However, before getting to the actual code,
 let's explore two important design features that 
 are integral to a Telemetrix Python API.
 
+A goal of the Telemetrix framework is to provide an experience that is close to 
+real-time as possible.
+
+A Telemetrix client has three major operations all competing for the attention
+of the processor.
+
+Those operations are:
+
+* Process the on-demand API command requests.
+* Receive and buffer reports and associated data coming from the Telemetrix server.
+* Process the data contained in the buffered reports.
+
+### Concurrency
+
+To manage these competing interests, Telemetrix uses a Python concurrency scheme.
+
+For the synchronous API, [TelemetrixUnoR4Minima](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/),
+[Python threading](https://docs.python.org/3/library/threading.html) 
+is used, and for the asynchronous API, 
+[telemetrix_uno_r4_minima_aio](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference_aio/),
+[Python asyncio](https://docs.python.org/3/library/asyncio.html) is used.
+
+For the synchronous API, a [Python deque](https://docs.python.org/3/library/collections.html#deque-objects)
+is used. A deque supports thread-safe, memory efficient appends and pops from either 
+side of the deque to buffer and retrieve Telemetrix server reports.
+
+### Minimizing Telemetrix Client/Server Messaging Overhead Via Callbacks
+
+The Telemetrix protocol is designed to minimize the data communication overhead
+between the client and server by using a callback scheme.
+
+The alternative to using callbacks is to have the client poll the server for
+data. This approach is not only more complex, but also less efficient.
+For example, if we want to continuously monitor the state of a pin, we would have to 
+poll the
+server for data at a regular interval.
+
+A Telemetrix server autonomously monitors input pins and only transmits a report to 
+the client for processing when the state or value of the pin has changed.
+
+What is even worse is that polling increases the possibility of missing a pin value
+change event as a result of the added messaging and processing overhead.
+
+#### What Is A Callback?
+
+Simply put, a callback is a function 
+passed as an argument to another function. This action is sometimes referred
+to as _registering_ a callback.
+
+Let's look at an example.
+
+### Registering A Callback
+
+When a pin is set to an input mode, or when a supported device is enabled to return
+data, such as an HC-SR04 sensor distance sensor, the API requires that a call back 
+function be specified.
+
+
+
+The callback function, written by the user, is called when a report is received, and
+the data contained in the report is passed to the callback function as a parameter.
+
+
 
 <!-- more -->
 
