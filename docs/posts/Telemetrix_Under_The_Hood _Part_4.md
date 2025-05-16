@@ -225,7 +225,7 @@ CB_VALUE = 2
 CB_TIME = 3
 ```
 
-Now, let's look at how the callback dereferences and uses the list contents.
+Let's look at how the callback dereferences and uses the list contents.
 
 The first thing the callback does is check if the time from the last event change is 
 greater than .3 seconds. If it is, the input is debounced, and we can proceed.
