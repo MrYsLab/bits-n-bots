@@ -228,14 +228,13 @@ CB_TIME = 3
 Now, let's look at how the callback dereferences and uses the list contents.
 
 The first thing the callback does is check if the time from the last event change is 
-greater than .3 seconds. If it is, the input is debounced and we can proceed.
+greater than .3 seconds. If it is, the input is debounced, and we can proceed.
 
 Next, it converts the time stamp to a human-readable date and time.
 
-Finally, it prints the pin number, its reported value and the date and time when the 
-change occurred.
+Finally, it prints the pin number, its reported value, and the change's date and time.
 
-We try to keep the callback code as simple as possible, to avoid blocking.
+We keep the callback code as simple as possible to avoid blocking.
 
 #### Registering The Callback
 
@@ -246,8 +245,8 @@ We try to keep the callback code as simple as possible, to avoid blocking.
 
 The call back is registered in the call to set_pin_mode_digital_input.
 
-When a digital input report is received, the callback function is automatically called.
+The callback function is automatically called when a digital input report is received.
 
 The scope of a callback is only limited by how you wish to use it.
-You may have a single callback function to handle all reports from a single pin_type,
-or you may have a callback function for each pin.
+You may have a single callback function to handle all reports from 
+a single pin_type or a callback function for each pin.
