@@ -134,7 +134,7 @@ def the_callback(data):
     This will print the pin number, its reported value and
     the date and time when the change occurred
 
-    :param data: [pin, current reported value, pin_mode, timestamp]
+    :param data: [pin_type, pin_number, pin_value, raw_time_stamp]
     """
     global debounce_time
 
@@ -194,7 +194,62 @@ def the_callback(data):
         print(f'Pin: {data[CB_PIN]} Value: {data[CB_VALUE]} Time Stamp: {date}')
         debounce_time = data[CB_TIME]
 ```
-All callback functions have the same signature of a single parameter called _**data**_. 
+All callback functions have the same signature. That signature is a single parameter 
+called 
+_**data**_. 
+
+You are free to name the callback anything you like.
+For this example, we named the callback function _the_callback_.
+
 The data parameter is always a Python list, but the contents of the list vary by the 
-report type. When an API call requires a callback function, the contents of list
-are specified in the API documentation. For example, for _set_pin_mode_digital_input_
+report type. The last element of the list is always a time stamp except 
+for the loop_back report which does not contain a time stamp.
+
+When an API call requires a callback function, the 
+contents of list
+are specified in the API documentation. For example, for _set_pin_mode_digital_input_,
+data contains the following list:
+[pin_type, pin_number, pin_value, raw_time_stamp]
+
+The pin type identifies the pin type such as dht, analog, digital, etc. The pin number
+is the pin that is being monitored, the pin_value is the current reported value, and 
+the raw_time_stamp is the time stamp of the event, and the raw_time_stamp is the time 
+that the client received the report.
+
+In the example, we create variables that are offsets into the list, to help
+dereference the list contents.
+
+```aiignore
+# Callback data indices
+CB_PIN_MODE = 0
+CB_PIN = 1
+CB_VALUE = 2
+CB_TIME = 3
+```
+
+Now, let's look at how the callback dereferences and uses the list contents.
+
+The first thing the callback does is check if the time from the last event change is 
+greater than .3 seconds. If it is, the input is debounced and we can proceed.
+
+Next, it converts the time stamp to a human-readable date and time.
+
+Finally, it prints the pin number, its reported value and the date and time when the 
+change occurred.
+
+We try to keep the callback code as simple as possible, to avoid blocking.
+
+#### Registering The Callback
+
+```aiignore
+# set the pin mode
+    my_board.set_pin_mode_digital_input(pin, the_callback)
+```
+
+The call back is registered in the call to set_pin_mode_digital_input.
+
+When a digital input report is received, the callback function is automatically called.
+
+The scope of a callback is only limited by how you wish to use it.
+You may have a single callback function to handle all reports from a single pin_type,
+or you may have a callback function for each pin.
