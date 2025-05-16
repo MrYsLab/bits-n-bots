@@ -69,13 +69,12 @@ A message must be sent to the server, and the client must wait for the response.
 In addition, polling increases the chances of missing a pin value change event.
 
 Instead of polling, a Telemetrix server autonomously monitors input pins and only 
-transmits a report to 
-the client when the state or value of the pin has changed.
+transmits a report to the client when the pin's state or value has changed.
 
-The amount of bidirectional communication between the client and server is 
-therefore greatly reduced.
+The amount of bidirectional communication between the client and 
+server is significantly reduced.
 
-To asynchronously process incoming reports, Telemetrix uses a callback scheme.
+Telemetrix uses a callback scheme to process incoming reports asynchronously.
 
 #### What Is A Callback?
 
@@ -83,7 +82,7 @@ Simply put, a callback is a function
 passed as an argument to another function. This action is sometimes referred
 to as _registering_ a callback.
 
-Callback are registered in the following telemetrix API calls:
+Callbacks are registered in the following telemetrix API calls:
 
 * [i2c_read](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.i2c_read)
 * [i2c_read_restart_transmission](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.i2c_read_restart_transmission)
@@ -98,8 +97,8 @@ Callback are registered in the following telemetrix API calls:
 Callback functions are user-written pieces of code that process
 server report data and are part of a Telemetrix client application.
 
-Let's look at an example application that sets a pin as a digital input pin
-and reports the state of the pin when the pin state has been reported as changed.
+Let's look at an example application that sets a pin as a digital input pin and 
+reports the pin state when it has been reported as changed.
 The pin is connected to a pushbutton switch, and switch debouncing is provided
 as part of this application.
 
