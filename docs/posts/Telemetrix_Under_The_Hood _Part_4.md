@@ -69,7 +69,7 @@ A message must be sent to the server, and the client must wait for the response.
 In addition, polling increases the chances of missing a pin value change event.
 
 Instead of polling, a Telemetrix server autonomously monitors input pins and only 
-transmits a report to the client when the pin's state or value has changed.
+transmits a report to the client when the pin's state or value changes.
 
 The amount of bidirectional communication between the client and 
 server is significantly reduced.
@@ -188,7 +188,7 @@ def the_callback(data):
     """
     global debounce_time
 
-    # if the time from the last event change is > .2 seconds, the input is debounced
+    # if the time from the last event change is > .3 seconds, the input is debounced
     if data[CB_TIME] - debounce_time > .3:
         date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(data[CB_TIME]))
         print(f'Pin: {data[CB_PIN]} Value: {data[CB_VALUE]} Time Stamp: {date}')
@@ -199,25 +199,23 @@ called
 _**data**_. 
 
 You are free to name the callback anything you like.
-For this example, we named the callback function _the_callback_.
+For this example, we called the callback function _the_callback_.
 
-The data parameter is always a Python list, but the contents of the list vary by the 
-report type. The last element of the list is always a time stamp except 
-for the loop_back report which does not contain a time stamp.
+The data parameter is always a Python list, but the contents 
+vary by report type. The last element of the list is always a time stamp, 
+except for the loop_back report, which does not contain a time stamp.
 
-When an API call requires a callback function, the 
-contents of list
-are specified in the API documentation. For example, for _set_pin_mode_digital_input_,
+When an API call requires a callback function, the list's contents are 
+specified in the API documentation. For example, for _set_pin_mode_digital_input_,
 data contains the following list:
 [pin_type, pin_number, pin_value, raw_time_stamp]
 
-The pin type identifies the pin type such as dht, analog, digital, etc. The pin number
-is the pin that is being monitored, the pin_value is the current reported value, and 
-the raw_time_stamp is the time stamp of the event, and the raw_time_stamp is the time 
-that the client received the report.
+The pin type identifies the pin type, such as DHT, analog, digital, etc. The pin 
+number is the pin being monitored, the pin_value is 
+the current reported value, and the raw_time_stamp is the time stamp of 
+the event and the time that the client received the report.
 
-In the example, we create variables that are offsets into the list, to help
-dereference the list contents.
+In the example, we create offset variables to help dereference the list 
 
 ```aiignore
 # Callback data indices
