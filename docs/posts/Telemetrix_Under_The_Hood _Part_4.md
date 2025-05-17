@@ -10,19 +10,20 @@ comments: true
 
 ## The Telemetrix Python Client API
 
-This post will explore the Telemetrix Python client API 
-implementation for the Arduino UNO R4 Minima. To help focus the discussion, 
+This post will explore the implementation of the
+[Telemetrix Python client API](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/)
+for the Arduino UNO R4 Minima. To help focus the discussion, 
 we will again use the **HC-SR04 SONAR distance sensor** feature as an example.
 Please search for the **_SONAR SIDEBAR_** heading to make the discussions about this 
 feature easier to find.
 
-Before getting to the actual code, 
-let's explore two crucial design features
-integral to a Telemetrix Python API.
+Although this discussion is specific to the Arduino UNO R4 Minima client API, all
+Telemetrix client APIs are very similar, so you should be able to apply the information 
+in this post to any other Telemetrix client API.
 
 The Telemetrix framework aims to provide an experience as close 
 to real-time as possible. 
-To achieve this goal, the Telemetrix client implements concurrency and callback schemes.
+To achieve this goal, a Telemetrix client implements concurrency and callback schemes.
 
 
 
@@ -39,20 +40,30 @@ A Telemetrix client has three primary operations competing for the processor's a
 Those operations are:
 
 * Process the on-demand API command requests.
-* Receive and buffer reports and their associated data coming from the Telemetrix server.
+* Receive and buffer reports sent from the Telemetrix server over the transport link.
 * Process the data contained in the buffered reports.
 
-To manage these competing interests, Telemetrix uses a Python concurrency scheme.
+Concurrency allows the client to send command messages to the server while retrieving 
+and buffering server reports and processing the buffered 
+reports. All these operations are performed with minimal blocking to 
+ensure the application is highly reactive.
 
-For the synchronous API, [TelemetrixUnoR4Minima](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/),
-[Python threading](https://docs.python.org/3/library/threading.html) 
-is used, and for the asynchronous API, 
-[telemetrix_uno_r4_minima_aio](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference_aio/),
-[Python asyncio](https://docs.python.org/3/library/asyncio.html) is used.
+Concurrency is implemented using one of two Python concurrency schemes.
 
-A [Python deque](https://docs.python.org/3/library/collections.html#deque-objects)
-is used. It supports thread-safe, memory-efficient appends and pops from either side of 
-the deque to buffer and retrieve Telemetrix server reports.
+For the 
+[TelemetrixUnoR4Minima](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/)
+synchronous API, 
+[Python threading](https://docs.python.org/3/library/threading.html)
+and a 
+Python _deque_ are deployed. 
+
+
+For the  
+[TelemetrixUnoR4MinimaAio](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference_aio/)
+asynchronous API, 
+[Python asyncio](https://docs.python.org/3/library/asyncio.html) is used to implement 
+concurrency.
+
 
 <!-- more -->
 
@@ -62,19 +73,26 @@ the deque to buffer and retrieve Telemetrix server reports.
 The Telemetrix protocol uses a callback scheme to minimize the data 
 communication overhead between the client and server.
 
-The alternative to using callbacks is for the client to poll the server for input data 
-changes, but this approach is highly inefficient.
+The alternative to using callbacks is to periodically poll the server for changes 
+in input data. This approach is unacceptable because it is highly inefficient.
 
-A message must be sent to the server, and the client must wait for the response.
-In addition, polling increases the chances of missing a pin value change event.
+Not only does a command message need to be formed and 
+transmitted, but the client, without blocking,  must also wait for the server to create a 
+response and send a report message back.
+
+During all this messaging and waiting, a data change event on a 
+pin or device may be missed.
+
 
 Instead of polling, a Telemetrix server autonomously monitors input pins and only 
 transmits a report to the client when the pin's state or value changes.
 
-The amount of bidirectional communication between the client and 
-server is significantly reduced.
+When callbacks are used instead of polling, bidirectional communication between the 
+client and server is significantly reduced by 50% or more.
 
-Telemetrix uses a callback scheme to process incoming reports asynchronously.
+Because the server continuously monitors its input pins and devices,
+a data change is less likely to be missed. As soon as a data change is detected a
+report is sent to the client.
 
 #### What Is A Callback?
 
@@ -97,10 +115,10 @@ Callbacks are registered in the following telemetrix API calls:
 Callback functions are user-written pieces of code that process
 server report data and are part of a Telemetrix client application.
 
-Let's look at an example application that sets a pin as a digital input pin and 
-reports the pin state when it has been reported as changed.
-The pin is connected to a pushbutton switch, and switch debouncing is provided
-as part of this application.
+Let's look at an example that sets a pin as a digital input pin and 
+prints pin state changes.
+The pin is connected to a pushbutton switch, and switch debouncing is provided within 
+the callback function as part of this application.
 
 ```aiignore
 import sys
@@ -232,7 +250,7 @@ greater than .3 seconds. If it is, the input is debounced, and we can proceed.
 
 Next, it converts the time stamp to a human-readable date and time.
 
-Finally, it prints the pin number, its reported value, and the change's date and time.
+Finally, it prints the pin number, the reported value, and the change's date and time.
 
 We keep the callback code as simple as possible to avoid blocking.
 
