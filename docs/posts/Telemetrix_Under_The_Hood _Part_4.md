@@ -21,8 +21,8 @@ Although this discussion is specific to the Arduino UNO R4 Minima client API, al
 Telemetrix client APIs are very similar, so you should be able to apply the information 
 in this post to any other Telemetrix client API.
 
-The Telemetrix framework aims to provide an experience as close 
-to real-time as possible. 
+The Telemetrix framework aims to provide an experience that is as close to 
+real-time as possible.
 To achieve this goal, a Telemetrix client implements concurrency and callback schemes.
 
 
@@ -55,10 +55,12 @@ For the
 synchronous API, 
 [Python threading](https://docs.python.org/3/library/threading.html)
 and a 
-Python _deque_ are deployed. 
+Python [_deque_](https://docs.python.org/3/library/collections.html#collections.deque) 
+are deployed. A deque, which stands for double-ended queue, is a 
+data structure that allows you to add and remove items from either end of the queue. It
+is thread-safe and part of the Python standard library.
 
-
-For the  
+For the
 [TelemetrixUnoR4MinimaAio](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference_aio/)
 asynchronous API, 
 [Python asyncio](https://docs.python.org/3/library/asyncio.html) is used to implement 
@@ -73,8 +75,8 @@ concurrency.
 The Telemetrix protocol uses a callback scheme to minimize the data 
 communication overhead between the client and server.
 
-The alternative to using callbacks is to periodically poll the server for changes 
-in input data. This approach is unacceptable because it is highly inefficient.
+The alternative to using callbacks is to poll the server periodically 
+for changes in input data.  This approach is unacceptable because it is highly inefficient.
 
 Not only does a command message need to be formed and 
 transmitted, but the client, without blocking,  must also wait for the server to create a 
@@ -85,14 +87,15 @@ pin or device may be missed.
 
 
 Instead of polling, a Telemetrix server autonomously monitors input pins and only 
-transmits a report to the client when the pin's state or value changes.
+transmits a report to the client when the pin's state or value changes. 
+Because the server continuously monitors its input pins and devices,
+a data change is less likely to be missed. A report is immediately sent to the client 
+when a change is detected.
+
 
 When callbacks are used instead of polling, bidirectional communication between the 
-client and server is significantly reduced by 50% or more.
+client and server is significantly reduced by 50% or more when compared to polling.
 
-Because the server continuously monitors its input pins and devices,
-a data change is less likely to be missed. As soon as a data change is detected a
-report is sent to the client.
 
 #### What Is A Callback?
 
@@ -268,3 +271,65 @@ The callback function is automatically called when a digital input report is rec
 The scope of a callback is only limited by how you wish to use it.
 You may have a single callback function to handle all reports from 
 a single pin_type or a callback function for each pin.
+
+### The Telemetrix Client API Source Files
+
+The source code for a Telemetrix API client always consists of two files and an optional
+third.
+
+All Telemetrix clients "define their constants" in a file called _private_constants.py_.
+
+The actual API is defined within a file that contains the API class. This is the file 
+ imported into the client application.
+
+For example, when creating an application for the Arduino UNO R4 Minima, you would use
+the following import statement:
+
+```aiignore
+from telemetrix_uno_r4.minima.telemetrix_uno_r4_minimima import telemetrix_uno_r4_minima
+
+```
+
+Let's look at the project and module file tree structure supporting the Arduino UNO R4 
+Minima 
+and WIFI microcontrollers.
+
+```aiignore
+telemetrix_uno_r4
+├── __init__.py
+├── minima
+│   ├── __init__.py
+│   ├── telemetrix_uno_r4_minima
+│   │   ├── __init__.py
+│   │   ├── private_constants.py
+│   │   └── telemetrix_uno_r4_minima.py
+│   └── telemetrix_uno_r4_minima_aio
+│       ├── __init__.py
+│       ├── private_constants.py
+│       ├── telemetrix_aio_serial.py
+│       └── telemetrix_uno_r4_minima_aio.py
+└── wifi
+    ├── telemetrix_uno_r4_wifi
+    │   ├── __init__.py
+    │   ├── private_constants.py
+    │   └── telemetrix_uno_r4_wifi.py
+    └── telemetrix_uno_r4_wifi_aio
+        ├── __init__.py
+        ├── private_constants.py
+        ├── telemetrix_aio_ble.py
+        ├── telemetrix_aio_serial.py
+        ├── telemetrix_aio_socket.py
+        └── telemetrix_uno_r4_wifi_aio.py
+```
+#### The Private Constants File
+
+The first file that we will explore is 
+**_[private_constants.py](https://github.com/MrYsLab/telemetrix-uno-r4/blob/master/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/private_constants.py)_**.
+
+
+In Python, there isn't a built-in way to declare constants 
+like in some other languages (e.g., using const in C++ or final in Java). 
+However, by convention, variables intended to be constants are named 
+using all uppercase letters with underscores separating words. 
+This serves as a signal to other programmers that these values should not be changed.
+
