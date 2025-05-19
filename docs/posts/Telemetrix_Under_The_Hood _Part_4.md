@@ -52,7 +52,7 @@ Concurrency is implemented using one of two Python concurrency schemes.
 
 For the 
 [TelemetrixUnoR4Minima](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/)
-synchronous API, 
+threaded API, 
 [Python threading](https://docs.python.org/3/library/threading.html)
 and a 
 Python [_deque_](https://docs.python.org/3/library/collections.html#collections.deque) 
@@ -198,6 +198,7 @@ except KeyboardInterrupt:
 
 ```
 Let's begin by looking at the callback function.
+
 ```aiignore
 def the_callback(data):
     """
@@ -274,25 +275,7 @@ a single pin_type or a callback function for each pin.
 
 ### The Telemetrix Client API Source Files
 
-The source code for a Telemetrix API client always consists of two files and an optional
-third.
-
-All Telemetrix clients "define their constants" in a file called _private_constants.py_.
-
-The actual API is defined within a file that contains the API class. This is the file 
- imported into the client application.
-
-For example, when creating an application for the Arduino UNO R4 Minima, you would use
-the following import statement:
-
-```aiignore
-from telemetrix_uno_r4.minima.telemetrix_uno_r4_minimima import telemetrix_uno_r4_minima
-
-```
-
-Let's look at the project and module file tree structure supporting the Arduino UNO R4 
-Minima 
-and WIFI microcontrollers.
+Let's look at the file tree for the telemetrix-uno-r4 project.
 
 ```aiignore
 telemetrix_uno_r4
@@ -321,15 +304,46 @@ telemetrix_uno_r4
         ├── telemetrix_aio_socket.py
         └── telemetrix_uno_r4_wifi_aio.py
 ```
+This project consists of two main modules: one for the Arduino R4 Minima 
+microcontroller and the other for the Arduino R4 WIFI microcontroller.
+
+The minima module contains two submodules: _telemetrix_uno_r4_minima_ for 
+the threaded API and _telemetrix_uno_r4_minima_aio_ 
+for the asynchronous API.
+
+The wifi module also contains two submodules: 
+one for the threaded API, _telemetrix_uno_r4_wifi_, and the other for 
+the asynchronous API, _telemetrix_uno_r4_wifi_aio_.
+
+All four submodules contain a file called private_constants.py and a file that 
+defines the API class definition.  For the threaded Minima API, 
+this file is called _telemetrix_uno_r4_minima.py_, and we will look at 
+it after discussing the private constants file.
+
+The asyncio sub-modules contain one or more additional files that support a specific 
+data-link transport.
+
+This discussion will focus on the threaded API, 
+_[telemetrix_uno_r4_minima](https://github.com/MrYsLab/telemetrix-uno-r4/tree/master/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima)_, 
+for the 
+Arduino R4 Minima microcontroller.
+
 #### The Private Constants File
 
-The first file that we will explore is 
-**_[private_constants.py](https://github.com/MrYsLab/telemetrix-uno-r4/blob/master/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/private_constants.py)_**.
 
+All Telemetrix clients "define their constants" in a file called _private_constants.py_.
 
-In Python, there isn't a built-in way to declare constants 
-like in some other languages (e.g., using const in C++ or final in Java). 
+There isn't a built-in way to declare constants in Python like in some other languages 
+(e.g., using const in C++ or final in Java). 
 However, by convention, variables intended to be constants are named 
 using all uppercase letters with underscores separating words. 
-This serves as a signal to other programmers that these values should not be changed.
+This convention serves as a signal these values should not be changed.
 
+The _private_constants.py_ file is included with all Telemetrix clients and are specific
+to the client API.
+
+
+Let's look at
+**_[private_constants.py](https://github.com/MrYsLab/telemetrix-uno-r4/blob/master/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/private_constants.py)_**.
+
+##### Organization
