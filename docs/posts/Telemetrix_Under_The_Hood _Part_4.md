@@ -337,15 +337,14 @@ There isn't a built-in way to declare constants in Python like in some other lan
 (e.g., using const in C++ or final in Java). 
 However, by convention, variables intended to be constants are named 
 using all uppercase letters with underscores separating words. 
-This convention serves as a signal these values should not be changed.
+This convention serves as a signal that these values should not be changed.
 
-The _private_constants.py_ file is included with all Telemetrix clients and are specific
-to the client API.
+A _private_constants.py_ file is included with all Telemetrix clients.
 
 
 Let's look at
-**_[private_constants.py](https://github.
-com/MrYsLab/telemetrix-uno-r4/blob/master/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/private_constants.py)_**.
+**_[private_constants.py](https://github.com/MrYsLab/telemetrix-uno-r4/blob/master/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/private_constants.py)_**
+for the Arduino R4 Minima microcontroller.
 
 
 ```aiignore
@@ -481,13 +480,14 @@ class PrivateConstants:
     SONAR_FEATURE = 0x20
 ```
 
-The "constants" are all defined as class variables of the PrivateConstants class.
+The "constants" are all defined as class variables within the PrivateConstants class.
 
 ##### Command IDs
 The first section of the file defines the command IDs. These values must match those 
 [defined in the server](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L128).
-When adding a new feature, make sure that server is updated with the new value, and that
-you add the new feature ID after the last command ID in the file.
+When adding a new feature, make sure that server command ID is updated with the same 
+value.  Add the new feature ID after the last feature ID. This will maintain using the 
+command ID as index.
 
 ###### _SONAR SIDEBAR_
 
@@ -498,5 +498,58 @@ There are three command IDs associated with the HC-SR04 device.
 * SONAR_DISABLE - commands the server to stop sending sonar reports.
 * SONAR_ENABLE - commands the server to send sonar reports.
 
+##### Report IDs
 
+The next section of the file defines the report IDs. These values must match those 
+[defined in the server](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L130).
+When adding a new feature, make sure that server report ID is updated with the same 
+value.  Add the new report ID just before DEBUG_PRINT ID. 
 
+###### _SONAR SIDEBAR_
+The report ID for the HC-SR04 device is 11.
+
+##### Version Number
+
+The version number comes next.  This is the version of the Telemetrix client.
+
+##### Reporting Control
+
+Reporting control defines the values that can be used to disable or enable reporting.
+
+##### Pin Mode Definitions
+
+This section defines the pin mode values.
+
+##### Maximum Number of Digital Pins
+
+This value defines the maximum number of digital pins supported by the client.
+
+##### Maximum Number of Analog Pins
+
+This value defines the maximum number of analog pins supported by the client.
+
+##### Maximum Number of Specific Devices supported
+
+The maximum number of SONARs and DHT temperature/humidity sensors supported by the 
+client.
+
+###### _SONAR SIDEBAR_
+
+There are a maximum of 6 SONARs supported by the client.
+
+##### DHT Report Sub-Types
+
+A DHT report can contain either a valid temperature/humidity reading or it is possible
+that the device reports and error.
+This section 
+defines 
+the two sub-types.
+
+###### Feature Masks
+
+This section defines the feature masks. These masks allow to determine which features 
+are supported by the client. The values are defined within the server.
+
+###### _SONAR SIDEBAR_
+
+The feature mask for the Servo device is 0x20.
