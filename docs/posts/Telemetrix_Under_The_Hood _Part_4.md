@@ -480,21 +480,21 @@ class PrivateConstants:
     SONAR_FEATURE = 0x20
 ```
 
-The "constants" are all defined as class variables within the PrivateConstants class.
+The "constants" are defined as class variables within the PrivateConstants class.
 
 ##### Command IDs
 The first section of the file defines the command IDs. These values must match those 
 [defined in the server](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L128).
-When adding a new feature, make sure that server command ID is updated with the same 
-value.  Add the new feature ID after the last feature ID. This will maintain using the 
-command ID as index.
+When adding a new feature, update the server command 
+ID with the same value.  Add the new feature ID after the last feature ID. 
+Doing so will maintain using the command ID as an index.
 
 ###### _SONAR SIDEBAR_
 
 There are three command IDs associated with the HC-SR04 device.
 
-* SONAR_NEW - commands the server to add a new entry in its "sonar table" and to 
-  immediately start monitoring device.
+* SONAR_NEW - commands the server to add a new entry to its 
+ "sonar table" and to start monitoring the device immediately.
 * SONAR_DISABLE - commands the server to stop sending sonar reports.
 * SONAR_ENABLE - commands the server to send sonar reports.
 
@@ -502,15 +502,16 @@ There are three command IDs associated with the HC-SR04 device.
 
 The next section of the file defines the report IDs. These values must match those 
 [defined in the server](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L130).
-When adding a new feature, make sure that server report ID is updated with the same 
-value.  Add the new report ID just before DEBUG_PRINT ID. 
+When adding a new feature, update the server with a report ID of the same value. 
+Add the new report ID just before the DEBUG_PRINT ID.
+
 
 ###### _SONAR SIDEBAR_
 The report ID for the HC-SR04 device is 11.
 
 ##### Version Number
 
-The version number comes next.  This is the version of the Telemetrix client.
+The version number comes next. It specifies the current version of the Telemetrix client.
 
 ##### Reporting Control
 
@@ -535,20 +536,19 @@ client.
 
 ###### _SONAR SIDEBAR_
 
-There are a maximum of 6 SONARs supported by the client.
+The client supports a maximum of 6 SONAR devices.
 
 ##### DHT Report Sub-Types
 
-A DHT report can contain either a valid temperature/humidity reading or it is possible
-that the device reports and error.
-This section 
-defines 
-the two sub-types.
+A DHT report can contain a valid temperature/humidity reading, 
+or the device may report an error.
+This section defines the two sub-types.
+
 
 ###### Feature Masks
 
-This section defines the feature masks. These masks allow to determine which features 
-are supported by the client. The values are defined within the server.
+This section defines the feature masks. 
+These masks allow us to determine which features the client supports. 
 
 ###### _SONAR SIDEBAR_
 
