@@ -21,7 +21,7 @@ Although this discussion is specific to the Arduino UNO R4 Minima client API, al
 Telemetrix client APIs are very similar, so you should be able to apply the information 
 in this post to any other Telemetrix client API.
 
-The Telemetrix framework aims to provide an experience that is as close to 
+The Telemetrix framework aims to provide an experience as close to 
 real-time as possible.
 To achieve this goal, a Telemetrix client implements concurrency and callback schemes.
 
@@ -331,15 +331,14 @@ Arduino R4 Minima microcontroller.
 #### The Private Constants File
 
 
-All Telemetrix clients "define their constants" in a file called _private_constants.py_.
+All Telemetrix clients "define their constants" in a file 
+called _private_constants.py_.
 
 There isn't a built-in way to declare constants in Python like in some other languages 
 (e.g., using const in C++ or final in Java). 
 However, by convention, variables intended to be constants are named 
 using all uppercase letters with underscores separating words. 
 This convention serves as a signal that these values should not be changed.
-
-A _private_constants.py_ file is included with all Telemetrix clients.
 
 
 Let's look at
@@ -480,14 +479,13 @@ class PrivateConstants:
     SONAR_FEATURE = 0x20
 ```
 
-The "constants" are defined as class variables within the PrivateConstants class.
+Many of the private constant file values are mirrored on the server.
 
 ##### Command IDs
 The first section of the file defines the command IDs. These values must match those 
-[defined in the server](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L128).
-When adding a new feature, update the server command 
-ID with the same value.  Add the new feature ID after the last feature ID. 
-Doing so will maintain using the command ID as an index.
+[defined in the server](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L119).
+When adding a new feature, update the server with a command 
+ID of the same value.  Add the new feature ID after the last command ID in the file. 
 
 ###### _SONAR SIDEBAR_
 
@@ -501,8 +499,8 @@ There are three command IDs associated with the HC-SR04 device.
 ##### Report IDs
 
 The next section of the file defines the report IDs. These values must match those 
-[defined in the server](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L130).
-When adding a new feature, update the server with a report ID of the same value. 
+[defined in the server](https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L398).
+When adding a new report, update the server with a report ID of the same value. 
 Add the new report ID just before the DEBUG_PRINT ID.
 
 
@@ -545,7 +543,7 @@ or the device may report an error.
 This section defines the two sub-types.
 
 
-###### Feature Masks
+##### Feature Masks
 
 This section defines the feature masks. 
 These masks allow us to determine which features the client supports. 
@@ -553,3 +551,356 @@ These masks allow us to determine which features the client supports.
 ###### _SONAR SIDEBAR_
 
 The feature mask for the Servo device is 0x20.
+
+#### The API Class Definition
+
+All Telemetrix API class definitions are very similar. Once you understand
+the API class definition
+[telemetrix_uno_r4_minima.py](https://github.com/MrYsLab/telemetrix-uno-r4/blob/master/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py),
+you will be prepared to understand all other Telemetrix API class definitions.
+
+
+
+
+Let's look at telemetrix_uno_r4_minima.py section by section.
+
+##### Init Method
+
+```aiignore
+class TelemetrixUnoR4Minima(threading.Thread):
+    """
+    This class exposes and implements the telemetrix API.
+    It uses threading to accommodate concurrency.
+    It includes the public API methods as well as
+    a set of private methods.
+
+    """
+
+    # noinspection PyPep8,PyPep8,PyPep8
+    def __init__(self, com_port=None, arduino_instance_id=1,
+                 arduino_wait=1, sleep_tune=0.000001,
+                 shutdown_on_exception=True, hard_reset_on_shutdown=True):
+
+        """
+
+        :param com_port: e.g. COM3 or /dev/ttyACM0.
+                         Only use if you wish to bypass auto com port
+                         detection.
+
+        :param arduino_instance_id: Match with the value installed on the
+                                    arduino-telemetrix sketch.
+
+        :param arduino_wait: Amount of time to wait for an Arduino to
+                             fully reset itself.
+
+        :param sleep_tune: A tuning parameter (typically not changed by user)
+
+        :param shutdown_on_exception: call shutdown before raising
+                                      a RunTimeError exception, or
+                                      receiving a KeyboardInterrupt exception
+
+        :param hard_reset_on_shutdown: reset the board on shutdown
+
+        """
+
+        # initialize threading parent
+        threading.Thread.__init__(self)
+
+        # create the threads and set them as daemons so
+        # that they stop when the program is closed
+
+        # create a thread to interpret received serial data
+        self.the_reporter_thread = threading.Thread(target=self._reporter)
+        self.the_reporter_thread.daemon = True
+
+        self.the_data_receive_thread = threading.Thread(target=self._serial_receiver)
+
+        self.the_data_receive_thread.daemon = True
+
+        # flag to allow the reporter and receive threads to run.
+        self.run_event = threading.Event()
+```
+
+The init method begins by creating the reporter and receive threads and sets them as 
+daemons.
+It also 
+creates the run_event flag for thread synchronization.
+
+Next, it saves all the parameters passed to the init method.
+
+```aiignore
+        # save input parameters as instance variables
+        self.com_port = com_port
+        self.arduino_instance_id = arduino_instance_id
+        self.arduino_wait = arduino_wait
+        self.sleep_tune = sleep_tune
+        self.shutdown_on_exception = shutdown_on_exception
+        self.hard_reset_on_shutdown = hard_reset_on_shutdown
+```
+then, it creates a dequeue object to hold the received data.
+
+```aiignore
+# create a deque to receive and process data from the arduino
+        self.the_deque = deque()
+```
+
+A report dispatch table is created as a dictionary. Each entry in the dictionary 
+is a tuple of the report ID as the key and the report processing function as its value.
+
+When adding a new report, add a new entry to the report dispatch table.
+
+```aiignore
+
+        # The report_dispatch dictionary is used to process
+        # incoming report messages by looking up the report message
+        # and executing its associated processing method.
+
+        self.report_dispatch = {}
+
+        # To add a command to the command dispatch table, append here.
+        self.report_dispatch.update(
+            {PrivateConstants.LOOP_COMMAND: self._report_loop_data})
+        self.report_dispatch.update(
+            {PrivateConstants.DEBUG_PRINT: self._report_debug_data})
+        self.report_dispatch.update(
+            {PrivateConstants.DIGITAL_REPORT: self._digital_message})
+        self.report_dispatch.update(
+            {PrivateConstants.ANALOG_REPORT: self._analog_message})
+        self.report_dispatch.update(
+            {PrivateConstants.FIRMWARE_REPORT: self._firmware_message})
+        self.report_dispatch.update({PrivateConstants.I_AM_HERE_REPORT: self._i_am_here})
+        self.report_dispatch.update(
+            {PrivateConstants.SERVO_UNAVAILABLE: self._servo_unavailable})
+        self.report_dispatch.update(
+            {PrivateConstants.I2C_READ_REPORT: self._i2c_read_report})
+        self.report_dispatch.update(
+            {PrivateConstants.I2C_TOO_FEW_BYTES_RCVD: self._i2c_too_few})
+        self.report_dispatch.update(
+            {PrivateConstants.I2C_TOO_MANY_BYTES_RCVD: self._i2c_too_many})
+        self.report_dispatch.update(
+            {PrivateConstants.SONAR_DISTANCE: self._sonar_distance_report})
+        self.report_dispatch.update({PrivateConstants.DHT_REPORT: self._dht_report})
+        self.report_dispatch.update(
+            {PrivateConstants.SPI_REPORT: self._spi_report})
+        self.report_dispatch.update(
+            {PrivateConstants.ONE_WIRE_REPORT: self._onewire_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_DISTANCE_TO_GO:
+                 self._stepper_distance_to_go_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_TARGET_POSITION:
+                 self._stepper_target_position_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_CURRENT_POSITION:
+                 self._stepper_current_position_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_RUNNING_REPORT:
+                 self._stepper_is_running_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_RUN_COMPLETE_REPORT:
+                 self._stepper_run_complete_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_DISTANCE_TO_GO:
+                 self._stepper_distance_to_go_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_TARGET_POSITION:
+                 self._stepper_target_position_report})
+        self.report_dispatch.update(
+            {PrivateConstants.FEATURES:
+                 self._features_report})
+```
+###### _SONAR SIDEBAR_
+
+The HC-SR04 device is added to the report dispatch table, as shown below.
+
+```aiignore
+self.report_dispatch.update(
+            {PrivateConstants.SONAR_DISTANCE: self._sonar_distance_report})
+```
+
+Storage is allocated for the various callback functions. 
+
+```aiignore
+        # dictionaries to store the callbacks for each pin
+        self.analog_callbacks = {}
+
+        self.digital_callbacks = {}
+
+        self.i2c_callback = None
+        self.i2c_callback2 = None
+
+        self.i2c_1_active = False
+        self.i2c_2_active = False
+
+        self.spi_callback = None
+
+        self.onewire_callback = None
+
+        self.cs_pins_enabled = []
+
+        # the trigger pin will be the key to retrieve
+        # the callback for a specific HC-SR04
+        self.sonar_callbacks = {}
+
+        self.sonar_count = 0
+
+        self.dht_callbacks = {}
+
+        self.dht_count = 0
+```
+In addition, an empty list, self. cs_pins_enabled 
+is created to store valid SPI chip select pins.
+
+Also, 
+feature-specific variables, such as self.dht_count, 
+store the number of enabled DHT modules.
+ 
+
+##### _SONAR SIDEBAR_
+
+For the HC-SR04 SONAR device, the following variables are created:
+
+* **sonar_callbacks** - A dictionary to store the callback 
+functions for each SONAR with the 
+trigger pin is used as a key.
+* **sonar_count** - A counter to keep track of the number of registered sonars.
+
+The _init_ method continues allocating storage. The code's comments explain these 
+instance 
+variables.
+
+```aiignore
+        # serial port in use
+        self.serial_port = None
+
+        # flag to indicate we are in shutdown mode
+        self.shutdown_flag = False
+
+        # debug loopback callback method
+        self.loop_back_callback = None
+
+        # firmware version to be stored here
+        self.firmware_version = []
+
+        # reported arduino instance id
+        self.reported_arduino_id = []
+
+        # reported features
+        self.reported_features = 0
+
+        # flag to indicate if i2c was previously enabled
+        self.i2c_enabled = False
+
+        # flag to indicate if spi is initialized
+        self.spi_enabled = False
+
+        # flag to indicate if onewire is initialized
+        self.onewire_enabled = False
+
+```
+
+Next, the _init_ method starts the reporter thread, and the data receive thread.
+
+```aiignore
+        self.the_reporter_thread.start()
+        self.the_data_receive_thread.start()
+```
+
+The _data_receive_thread_ is implemented in the
+[__serial_receiver_ method](https://github.com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L2532).
+
+The reporter thread is implemented using the 
+[__reporter_](https://github.com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L2488) method.
+
+Since Python does not support the concept of a private method,
+a single underscore before the method name serves as a visual indicator that the method is
+to be considered private. 
+
+##### The _serial_receiver
+
+The _serial_receiver method reads data from the server, 
+byte by byte, and appends each byte to the deque.
+
+```aiignore
+    def _serial_receiver(self):
+        """
+        Thread to continuously check for incoming data.
+        When a byte comes in, place it onto the deque.
+        """
+        self.run_event.wait()
+
+        # Don't start this thread if using a tcp/ip transport
+
+        while self._is_running() and not self.shutdown_flag:
+            # we can get an OSError: [Errno9] Bad file descriptor when shutting down
+            # just ignore it
+            try:
+                if self.serial_port.inWaiting():
+                    c = self.serial_port.read()
+                    self.the_deque.append(ord(c))
+                    # print(ord(c))
+                else:
+                    time.sleep(self.sleep_tune)
+                    # continue
+            except OSError:
+                pass
+
+```
+
+
+##### The _reporter
+
+The reporter thread checks to see if anything on the deque needs processing.
+
+It creates a list, _response_data_, to hold the data to be processed when the callback is
+called. It pops the report length from the deque and then continues to retrieve all 
+other bytes for the report. When all the bytes have been retrieved, the report ID is 
+retrieved. Using the report ID as a key into the report dispatch table, the 
+associated callback processing function is called, passing the report data as an 
+argument to the callback.
+
+```aiignore
+    def _reporter(self):
+        """
+        This is the reporter thread. It continuously pulls data from
+        the deque. When a full message is detected, that message is
+        processed.
+        """
+        self.run_event.wait()
+
+        while self._is_running() and not self.shutdown_flag:
+            if len(self.the_deque):
+                # response_data will be populated with the received data for the report
+                response_data = []
+                packet_length = self.the_deque.popleft()
+                if packet_length:
+                    # get all the data for the report and place it into response_data
+                    for i in range(packet_length):
+                        while not len(self.the_deque):
+                            time.sleep(self.sleep_tune)
+                        data = self.the_deque.popleft()
+                        response_data.append(data)
+
+                    # print(f'response_data {response_data}')
+
+                    # get the report type and look up its dispatch method
+                    # here we pop the report type off of response_data
+                    report_type = response_data.pop(0)
+                    # print(f' reported type {report_type}')
+
+                    # retrieve the report handler from the dispatch table
+                    dispatch_entry = self.report_dispatch.get(report_type)
+
+                    # if there is additional data for the report,
+                    # it will be contained in response_data
+                    # noinspection PyArgumentList
+                    dispatch_entry(response_data)
+                    continue
+                else:
+                    if self.shutdown_on_exception:
+                        self.shutdown()
+                    raise RuntimeError(
+                        'A report with a packet length of zero was received.')
+            else:
+                time.sleep(self.sleep_tune)
+```
