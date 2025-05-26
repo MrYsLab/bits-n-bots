@@ -1,6 +1,6 @@
 ---
 draft: false
-date: 2025-05-26
+date: 2025-05-22
 categories:
   - Telemetrix Internals
 comments: true
@@ -52,7 +52,6 @@ discussions easier to find within the post.
 
 
 <!-- more -->
-
 
 ### Using An Established Arduino Library For Device Support
 

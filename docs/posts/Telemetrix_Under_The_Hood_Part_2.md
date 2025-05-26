@@ -1,6 +1,6 @@
 ---
 draft: false
-date: 2025-05-26
+date: 2025-05-21
 categories:
   - Telemetrix Internals
 comments: true
