@@ -647,6 +647,8 @@ then, it creates a dequeue object to hold the received data.
 A report dispatch table is created as a dictionary. Each entry in the dictionary 
 is a tuple of the report ID as the key and the report processing function as its value.
 
+###### Adding A New Report
+
 When adding a new report, add a new entry to the report dispatch table.
 
 ```aiignore
@@ -709,7 +711,7 @@ When adding a new report, add a new entry to the report dispatch table.
             {PrivateConstants.FEATURES:
                  self._features_report})
 ```
-###### _SONAR SIDEBAR_
+###### &nbsp;&nbsp;&nbsp;     _SONAR SIDEBAR_
 
 The HC-SR04 device is added to the report dispatch table, as shown below.
 
@@ -748,15 +750,16 @@ Storage is allocated for the various callback functions.
 
         self.dht_count = 0
 ```
-In addition, an empty list, self. cs_pins_enabled 
+In addition, an empty list, self.the cs_pins_enabled variable
 is created to store valid SPI chip select pins.
 
 Also, 
 feature-specific variables, such as self.dht_count, 
 store the number of enabled DHT modules.
  
+###### &nbsp;&nbsp;&nbsp;     Example - HC-SR04
 
-##### _SONAR SIDEBAR_
+###### &nbsp;&nbsp;&nbsp;      **_SONAR SIDEBAR_**
 
 For the HC-SR04 SONAR device, the following variables are created:
 
@@ -816,7 +819,7 @@ Since Python does not support the concept of a private method,
 a single underscore before the method name serves as a visual indicator that the method is
 to be considered private. 
 
-##### The _serial_receiver
+###### The _serial_receiver
 
 The _serial_receiver method reads data from the server, 
 byte by byte, and appends each byte to the deque.
@@ -848,16 +851,13 @@ byte by byte, and appends each byte to the deque.
 ```
 
 
-##### The _reporter
+###### The _reporter
 
-The reporter thread checks to see if anything on the deque needs processing.
+The reporter thread checks to see if anything is on the deque.
 
-It creates a list, _response_data_, to hold the data to be processed when the callback is
-called. It pops the report length from the deque and then continues to retrieve all 
-other bytes for the report. When all the bytes have been retrieved, the report ID is 
-retrieved. Using the report ID as a key into the report dispatch table, the 
-associated callback processing function is called, passing the report data as an 
-argument to the callback.
+It assembles the response_data list containing the 
+report data passed to an appropriate callback function.
+
 
 ```aiignore
     def _reporter(self):
@@ -904,3 +904,106 @@ argument to the callback.
             else:
                 time.sleep(self.sleep_tune)
 ```
+###### Establishing A Transport Link
+
+In this code section, an attempt is made to establish a serial transport link.
+
+When instantiating TelemetrixUnoR4Minima, if the com_port parameter is not specified,
+an attempt is made to find a connected device by calling 
+**_[find_arduino](https://github.com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L318)**.
+
+If the _com_port_ parameter is specified, then an attempt to 
+connect to that com_port is made.
+
+If the connection is successful, then threads are allowed to run.
+
+```aiignore
+       # using the serial link
+        if not self.com_port:
+            # user did not specify a com_port
+            try:
+                self._find_arduino()
+            except KeyboardInterrupt:
+                if self.shutdown_on_exception:
+                    self.shutdown()
+        else:
+            # com_port specified - set com_port and baud rate
+            try:
+                self._manual_open()
+            except KeyboardInterrupt:
+                if self.shutdown_on_exception:
+                    self.shutdown()
+
+        if self.serial_port:
+            print(
+                f"Arduino compatible device found and connected to {self.serial_port.port}")
+
+            self.serial_port.reset_input_buffer()
+            self.serial_port.reset_output_buffer()
+
+        # no com_port found - raise a runtime exception
+        else:
+            if self.shutdown_on_exception:
+                self.shutdown()
+            raise RuntimeError('No Arduino Found or User Aborted Program')
+
+        # allow the threads to run
+        self._run_threads()
+
+```
+###### Retrieving The Firmware Version From The Server And Proceeding
+
+The client sends a command to retrieve the server's version number. 
+If successful, it will retrieve the features supported by the server.
+
+Finally, a command is sent to reset the server's working data structures.
+```aiignore
+        # get telemetrix firmware version and print it
+        print('\nRetrieving Telemetrix4UnoR4Minima firmware ID...')
+        self._get_firmware_version()
+        if not self.firmware_version:
+            if self.shutdown_on_exception:
+                self.shutdown()
+            raise RuntimeError(f'Telemetrix4UnoR4Minima firmware version')
+
+        else:
+
+            print(f'Telemetrix4UnoR4Minima firmware version: {self.firmware_version[0]}.'
+                  f'{self.firmware_version[1]}.{self.firmware_version[2]}')
+        command = [PrivateConstants.ENABLE_ALL_REPORTS]
+        self._send_command(command)
+
+        # get the features list
+        command = [PrivateConstants.GET_FEATURES]
+        self._send_command(command)
+        time.sleep(.2)
+
+        # Have the server reset its data structures
+        command = [PrivateConstants.RESET]
+        self._send_command(command)
+```
+
+##### The API Command Methods
+
+The [next section of the code](https://github.
+com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L412)
+implements all the API command methods, including any "private" support methods.
+
+###### &nbsp;&nbsp;&nbsp;      **_SONAR SIDEBAR_**
+   
+The code for the three HC-SR04 commands may be found here:
+
+* [set_pin_mode_sonar](https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.set_pin_mode_sonar)
+* [sonar_enable](https://github.com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L1750)
+* [sonar_disable](https://github.com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L1743)
+
+##### The Report Handler Methods
+
+[This section of the code](https://github.
+com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L2110)
+implements all the report handlers.
+
+###### &nbsp;&nbsp;&nbsp;      **_SONAR SIDEBAR_**
+
+The code for the SONAR distance report is implemented
+[here.](https://github.com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L2336)
