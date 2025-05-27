@@ -15,8 +15,9 @@ Let's quickly summarize the steps needed to add new features to Telemetrix.
 
 <!-- more -->
 
+
 * Have a clear understanding of [Telemetrix messaging.](./Telemetrix_Under_The_Hood_Part_2.md)
-* Select an [Appropriate support](./Telemetrix_Under_The_Hood_Part_3.md/#using-an-established-arduino-library-for-device-support) library for 
+* Select an [Appropriate support](https://mryslab.github.io/bits-n-bots/2025/05/22/telemetrix-under-the-hood--part-3/#using-an-established-arduino-library-for-device-support) library for 
   your device.
 ### Adding A New Command
   * Select a new command ID for the device.
