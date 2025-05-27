@@ -2,22 +2,46 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://mryslab.github.io/bits-n-bots/</loc>
-         <lastmod>2023-12-15</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-05-27</lastmod>
+    </url>
+    <url>
+         <loc>https://mryslab.github.io/bits-n-bots/2025/05/20/telemetrix-under-the-hood--part-1/</loc>
+         <lastmod>2025-05-27</lastmod>
+    </url>
+    <url>
+         <loc>https://mryslab.github.io/bits-n-bots/2025/05/22/telemetrix-under-the-hood--part-3/</loc>
+         <lastmod>2025-05-27</lastmod>
+    </url>
+    <url>
+         <loc>https://mryslab.github.io/bits-n-bots/2025/05/23/telemetrix-under-the-hood--part-4/</loc>
+         <lastmod>2025-05-27</lastmod>
+    </url>
+    <url>
+         <loc>https://mryslab.github.io/bits-n-bots/2025/05/21/telemetrix-under-the-hood-part-2/</loc>
+         <lastmod>2025-05-27</lastmod>
+    </url>
+    <url>
+         <loc>https://mryslab.github.io/bits-n-bots/2025/05/25/telemetrix-under-the-hood-part-5/</loc>
+         <lastmod>2025-05-27</lastmod>
     </url>
     <url>
          <loc>https://mryslab.github.io/bits-n-bots/2023/12/14/welcome/</loc>
-         <lastmod>2023-12-15</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-05-27</lastmod>
+    </url>
+    <url>
+         <loc>https://mryslab.github.io/bits-n-bots/archive/2025/</loc>
+         <lastmod>2025-05-27</lastmod>
     </url>
     <url>
          <loc>https://mryslab.github.io/bits-n-bots/archive/2023/</loc>
-         <lastmod>2023-12-15</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-05-27</lastmod>
+    </url>
+    <url>
+         <loc>https://mryslab.github.io/bits-n-bots/category/telemetrix-internals/</loc>
+         <lastmod>2025-05-27</lastmod>
     </url>
     <url>
          <loc>https://mryslab.github.io/bits-n-bots/category/welcome/</loc>
-         <lastmod>2023-12-15</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-05-27</lastmod>
     </url>
 </urlset>

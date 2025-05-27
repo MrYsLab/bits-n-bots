@@ -1,0 +1,2020 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Mr. Y's Lab blog.">
+      
+      
+        <meta name="author" content="Alan Yorinks">
+      
+      
+        <link rel="canonical" href="https://mryslab.github.io/bits-n-bots/2025/05/23/telemetrix-under-the-hood--part-4/">
+      
+      
+        <link rel="prev" href="../../22/telemetrix-under-the-hood--part-3/">
+      
+      
+        <link rel="next" href="../../25/telemetrix-under-the-hood-part-5/">
+      
+      
+      <link rel="icon" href="../../../../assets/images/logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Telemetrix Under The Hood Part 4 - Bits 'n Bots</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-72FWR7622V"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-72FWR7622V",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-72FWR7622V",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+      
+        <meta  property="og:type"  content="website" >
+      
+        <meta  property="og:title"  content="Telemetrix Under The Hood  Part 4 - Bits 'n Bots" >
+      
+        <meta  property="og:description"  content="Mr. Y's Lab blog." >
+      
+        <meta  property="og:image"  content="https://mryslab.github.io/bits-n-bots/assets/images/social/posts/Telemetrix_Under_The_Hood _Part_4.png" >
+      
+        <meta  property="og:image:type"  content="image/png" >
+      
+        <meta  property="og:image:width"  content="1200" >
+      
+        <meta  property="og:image:height"  content="630" >
+      
+        <meta  property="og:url"  content="https://mryslab.github.io/bits-n-bots/2025/05/23/telemetrix-under-the-hood--part-4/" >
+      
+        <meta  name="twitter:card"  content="summary_large_image" >
+      
+        <meta  name="twitter:title"  content="Telemetrix Under The Hood  Part 4 - Bits 'n Bots" >
+      
+        <meta  name="twitter:description"  content="Mr. Y's Lab blog." >
+      
+        <meta  name="twitter:image"  content="https://mryslab.github.io/bits-n-bots/assets/images/social/posts/Telemetrix_Under_The_Hood _Part_4.png" >
+      
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-telemetrix-python-client-api" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Bits &#39;n Bots" class="md-header__button md-logo" aria-label="Bits 'n Bots" data-md-component="logo">
+      
+  <img src="../../../../assets/images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Bits 'n Bots
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Telemetrix Under The Hood  Part 4
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label=""  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Bits &#39;n Bots" class="md-nav__button md-logo" aria-label="Bits 'n Bots" data-md-component="logo">
+      
+  <img src="../../../../assets/images/logo.png" alt="logo">
+
+    </a>
+    Bits 'n Bots
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Archive
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../archive/2025/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2025
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../archive/2023/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2023
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Categories
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../category/telemetrix-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Telemetrix Internals
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../category/welcome/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Welcome
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-telemetrix-python-client-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Telemetrix Python Client API
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Telemetrix Python Client API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Concurrency
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minimizing-telemetrix-clientserver-messaging-overhead-via-callbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Minimizing Telemetrix Client/Server Messaging Overhead Via Callbacks
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Minimizing Telemetrix Client/Server Messaging Overhead Via Callbacks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      What Is A Callback?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registering-the-callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Registering The Callback
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-telemetrix-client-api-source-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Telemetrix Client API Source Files
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Telemetrix Client API Source Files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-private-constants-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Private Constants File
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Private Constants File">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command IDs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command IDs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sonar-sidebar" class="md-nav__link">
+    <span class="md-ellipsis">
+      SONAR SIDEBAR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      Report IDs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Report IDs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sonar-sidebar_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      SONAR SIDEBAR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-number" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version Number
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reporting-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reporting Control
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pin-mode-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pin Mode Definitions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maximum-number-of-digital-pins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Maximum Number of Digital Pins
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maximum-number-of-analog-pins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Maximum Number of Analog Pins
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maximum-number-of-specific-devices-supported" class="md-nav__link">
+    <span class="md-ellipsis">
+      Maximum Number of Specific Devices supported
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Maximum Number of Specific Devices supported">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sonar-sidebar_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      SONAR SIDEBAR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dht-report-sub-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      DHT Report Sub-Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-masks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Feature Masks
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Feature Masks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sonar-sidebar_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      SONAR SIDEBAR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-api-class-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      The API Class Definition
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The API Class Definition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#init-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      Init Method
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Init Method">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-a-new-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding A New Report
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sonar-sidebar_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;&nbsp;&nbsp; SONAR SIDEBAR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-hc-sr04" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;&nbsp;&nbsp; Example - HC-SR04
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sonar-sidebar_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;&nbsp;&nbsp; SONAR SIDEBAR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-_serial_receiver" class="md-nav__link">
+    <span class="md-ellipsis">
+      The _serial_receiver
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-_reporter" class="md-nav__link">
+    <span class="md-ellipsis">
+      The _reporter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#establishing-a-transport-link" class="md-nav__link">
+    <span class="md-ellipsis">
+      Establishing A Transport Link
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retrieving-the-firmware-version-from-the-server-and-proceeding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Retrieving The Firmware Version From The Server And Proceeding
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-api-command-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      The API Command Methods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The API Command Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sonar-sidebar_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;&nbsp;&nbsp; SONAR SIDEBAR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-report-handler-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Report Handler Methods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Report Handler Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sonar-sidebar_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;&nbsp;&nbsp; SONAR SIDEBAR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-next-posting" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Next Posting
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../../.." class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+                  <span class="md-ellipsis">
+                    Back to index
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    Metadata
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
+                        <time datetime="2025-05-23 00:00:00+00:00" class="md-ellipsis">May 23, 2025</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3zm3 2 4 13 3-1-4-13zM5 5v13h3V5zM3 19v2h18v-2z"/></svg>
+                          <span class="md-ellipsis">
+                            in
+                            
+                              <a href="../../../../category/telemetrix-internals/">Telemetrix Internals</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              15 min read
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+            
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+
+
+
+
+  <h1>Telemetrix Under The Hood  Part 4</h1>
+
+<p><img alt="" src="../../../../assets/images/api.png" width="450" /></p>
+<h2 id="the-telemetrix-python-client-api">The Telemetrix Python Client API<a class="headerlink" href="#the-telemetrix-python-client-api" title="Permanent link">&para;</a></h2>
+<p>This post will explore the implementation of the
+<a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/">Telemetrix Python client API</a>
+for the Arduino UNO R4 Minima. To help focus the discussion, 
+we will again use the <strong>HC-SR04 SONAR distance sensor</strong> feature as an example.
+Please search for the <strong><em>SONAR SIDEBAR</em></strong> heading to make the discussions about this 
+feature easier to find.</p>
+<p>Although this discussion is specific to the Arduino UNO R4 Minima client API, all
+Telemetrix client APIs are very similar, so you should be able to apply the information 
+in this post to any other Telemetrix client API.</p>
+<p>The Telemetrix framework aims to provide an experience as close to 
+real-time as possible.
+To achieve this goal, a Telemetrix client implements concurrency and callback schemes.</p>
+<h3 id="concurrency">Concurrency<a class="headerlink" href="#concurrency" title="Permanent link">&para;</a></h3>
+<p>Concurrency refers to a system's ability to execute multiple tasks 
+through simultaneous execution or time-sharing (context switching), 
+sharing resources, and managing interactions. It improves responsiveness, 
+throughput, and scalability.</p>
+<p>A Telemetrix client has three primary operations competing for the processor's attention.</p>
+<p>Those operations are:</p>
+<ul>
+<li>Process the on-demand API command requests.</li>
+<li>Receive and buffer reports sent from the Telemetrix server over the transport link.</li>
+<li>Process the data contained in the buffered reports.</li>
+</ul>
+<p>Concurrency allows the client to send command messages to the server while retrieving 
+and buffering server reports and processing the buffered 
+reports. All these operations are performed with minimal blocking to 
+ensure the application is highly reactive.</p>
+<p>Concurrency is implemented using one of two Python concurrency schemes.</p>
+<p>For the 
+<a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/">TelemetrixUnoR4Minima</a>
+threaded API, 
+<a href="https://docs.python.org/3/library/threading.html">Python threading</a>
+and a 
+Python <a href="https://docs.python.org/3/library/collections.html#collections.deque"><em>deque</em></a> 
+are deployed. A deque, which stands for double-ended queue, is a 
+data structure that allows you to add and remove items from either end of the queue. It
+is thread-safe and part of the Python standard library.</p>
+<p>For the
+<a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference_aio/">TelemetrixUnoR4MinimaAio</a>
+asynchronous API, 
+<a href="https://docs.python.org/3/library/asyncio.html">Python asyncio</a> is used to implement 
+concurrency.</p>
+<!-- more -->
+
+<h3 id="minimizing-telemetrix-clientserver-messaging-overhead-via-callbacks">Minimizing Telemetrix Client/Server Messaging Overhead Via Callbacks<a class="headerlink" href="#minimizing-telemetrix-clientserver-messaging-overhead-via-callbacks" title="Permanent link">&para;</a></h3>
+<p>The Telemetrix protocol uses a callback scheme to minimize the data 
+communication overhead between the client and server.</p>
+<p>The alternative to using callbacks is to poll the server periodically 
+for changes in input data.  This approach is unacceptable because it is highly inefficient.</p>
+<p>Not only does a command message need to be formed and 
+transmitted, but the client, without blocking,  must also wait for the server to create a 
+response and send a report message back.</p>
+<p>During all this messaging and waiting, a data change event on a 
+pin or device may be missed.</p>
+<p>Instead of polling, a Telemetrix server autonomously monitors input pins and only 
+transmits a report to the client when the pin's state or value changes. 
+Because the server continuously monitors its input pins and devices,
+a data change is less likely to be missed. A report is immediately sent to the client 
+when a change is detected.</p>
+<p>When callbacks are used instead of polling, bidirectional communication between the 
+client and server is significantly reduced by 50% or more when compared to polling.</p>
+<h4 id="what-is-a-callback">What Is A Callback?<a class="headerlink" href="#what-is-a-callback" title="Permanent link">&para;</a></h4>
+<p>Simply put, a callback is a function 
+passed as an argument to another function. This action is sometimes referred
+to as <em>registering</em> a callback.</p>
+<p>Callbacks are registered in the following telemetrix API calls:</p>
+<ul>
+<li><a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.i2c_read">i2c_read</a></li>
+<li><a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.i2c_read_restart_transmission">i2c_read_restart_transmission</a></li>
+<li><a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.loop_back">loop_back</a></li>
+<li><a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.set_pin_mode_analog_input">set_pin_mode_analog_input</a></li>
+<li><a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.set_pin_mode_dht">set_pin_mode_dht</a></li>
+<li><a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.set_pin_mode_digital_input">set_pin_mode_digital_input</a></li>
+<li><a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.set_pin_mode_digital_input">set_pin_mode_digital_input_pullup</a></li>
+<li><a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.set_pin_mode_sonar">set_pin_mode_sonar</a></li>
+<li><a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.spi_read_blocking">spi_read_blocking</a></li>
+</ul>
+<p>Callback functions are user-written pieces of code that process
+server report data and are part of a Telemetrix client application.</p>
+<p>Let's look at an example that sets a pin as a digital input pin and 
+prints pin state changes.
+The pin is connected to a pushbutton switch, and switch debouncing is provided within 
+the callback function as part of this application.</p>
+<pre><code class="language-aiignore">import sys
+import time
+
+from telemetrix_uno_r4.minima.telemetrix_uno_r4_minima import telemetrix_uno_r4_minima
+&quot;&quot;&quot;
+Monitor a digital input pin
+&quot;&quot;&quot;
+
+&quot;&quot;&quot;
+Setup a pin for digital input and monitor its changes
+&quot;&quot;&quot;
+
+# Set up a pin for analog input and monitor its changes
+DIGITAL_PIN = 12  # arduino pin number
+
+# Callback data indices
+CB_PIN_MODE = 0
+CB_PIN = 1
+CB_VALUE = 2
+CB_TIME = 3
+
+# variable to hold the last time a button state changed
+debounce_time = time.time()
+
+
+def the_callback(data):
+    &quot;&quot;&quot;
+    A callback function to report data changes.
+    This will print the pin number, its reported value and
+    the date and time when the change occurred
+
+    :param data: [pin_type, pin_number, pin_value, raw_time_stamp]
+    &quot;&quot;&quot;
+    global debounce_time
+
+    # if the time from the last event change is &gt; .2 seconds, the input is debounced
+    if data[CB_TIME] - debounce_time &gt; .3:
+        date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(data[CB_TIME]))
+        print(f'Pin: {data[CB_PIN]} Value: {data[CB_VALUE]} Time Stamp: {date}')
+        debounce_time = data[CB_TIME]
+
+
+def digital_in(my_board, pin):
+    &quot;&quot;&quot;
+     This function establishes the pin as a
+     digital input. Any changes on this pin will
+     be reported through the call back function.
+
+     :param my_board: a telemetrix instance
+     :param pin: Arduino pin number
+     &quot;&quot;&quot;
+
+    # set the pin mode
+    my_board.set_pin_mode_digital_input(pin, the_callback)
+
+    print('Enter Control-C to quit.')
+    # my_board.enable_digital_reporting(12)
+    try:
+        while True:
+            time.sleep(.0001)
+    except KeyboardInterrupt:
+        board.shutdown()
+        sys.exit(0)
+
+
+board = telemetrix_uno_r4_minima.TelemetrixUnoR4Minima()
+try:
+    digital_in(board, DIGITAL_PIN)
+except KeyboardInterrupt:
+    board.shutdown()
+    sys.exit(0)
+
+</code></pre>
+<p>Let's begin by looking at the callback function.</p>
+<pre><code class="language-aiignore">def the_callback(data):
+    &quot;&quot;&quot;
+    A callback function to report data changes.
+    This will print the pin number, its reported value and
+    the date and time when the change occurred
+
+    :param data: [pin, current reported value, pin_mode, timestamp]
+    &quot;&quot;&quot;
+    global debounce_time
+
+    # if the time from the last event change is &gt; .3 seconds, the input is debounced
+    if data[CB_TIME] - debounce_time &gt; .3:
+        date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(data[CB_TIME]))
+        print(f'Pin: {data[CB_PIN]} Value: {data[CB_VALUE]} Time Stamp: {date}')
+        debounce_time = data[CB_TIME]
+</code></pre>
+<p>All callback functions have the same signature. That signature is a single parameter 
+called 
+<em><strong>data</strong></em>. </p>
+<p>You are free to name the callback anything you like.
+For this example, we called the callback function <em>the_callback</em>.</p>
+<p>The data parameter is always a Python list, but the contents 
+vary by report type. The last element of the list is always a time stamp, 
+except for the loop_back report, which does not contain a time stamp.</p>
+<p>When an API call requires a callback function, the list's contents are 
+specified in the API documentation. For example, for <em>set_pin_mode_digital_input</em>,
+data contains the following list:
+[pin_type, pin_number, pin_value, raw_time_stamp]</p>
+<p>The pin type identifies the pin type, such as DHT, analog, digital, etc. The pin 
+number is the pin being monitored, the pin_value is 
+the current reported value, and the raw_time_stamp is the time stamp of 
+the event and the time that the client received the report.</p>
+<p>In the example, we create offset variables to help dereference the list </p>
+<pre><code class="language-aiignore"># Callback data indices
+CB_PIN_MODE = 0
+CB_PIN = 1
+CB_VALUE = 2
+CB_TIME = 3
+</code></pre>
+<p>Let's look at how the callback dereferences and uses the list contents.</p>
+<p>The first thing the callback does is check if the time from the last event change is 
+greater than .3 seconds. If it is, the input is debounced, and we can proceed.</p>
+<p>Next, it converts the time stamp to a human-readable date and time.</p>
+<p>Finally, it prints the pin number, the reported value, and the change's date and time.</p>
+<p>We keep the callback code as simple as possible to avoid blocking.</p>
+<h4 id="registering-the-callback">Registering The Callback<a class="headerlink" href="#registering-the-callback" title="Permanent link">&para;</a></h4>
+<pre><code class="language-aiignore"># set the pin mode
+    my_board.set_pin_mode_digital_input(pin, the_callback)
+</code></pre>
+<p>The call back is registered in the call to set_pin_mode_digital_input.</p>
+<p>The callback function is automatically called when a digital input report is received.</p>
+<p>The scope of a callback is only limited by how you wish to use it.
+You may have a single callback function to handle all reports from 
+a single pin_type or a callback function for each pin.</p>
+<h3 id="the-telemetrix-client-api-source-files">The Telemetrix Client API Source Files<a class="headerlink" href="#the-telemetrix-client-api-source-files" title="Permanent link">&para;</a></h3>
+<p>Let's look at the file tree for the telemetrix-uno-r4 project.</p>
+<pre><code class="language-aiignore">telemetrix_uno_r4
+├── __init__.py
+├── minima
+│   ├── __init__.py
+│   ├── telemetrix_uno_r4_minima
+│   │   ├── __init__.py
+│   │   ├── private_constants.py
+│   │   └── telemetrix_uno_r4_minima.py
+│   └── telemetrix_uno_r4_minima_aio
+│       ├── __init__.py
+│       ├── private_constants.py
+│       ├── telemetrix_aio_serial.py
+│       └── telemetrix_uno_r4_minima_aio.py
+└── wifi
+    ├── telemetrix_uno_r4_wifi
+    │   ├── __init__.py
+    │   ├── private_constants.py
+    │   └── telemetrix_uno_r4_wifi.py
+    └── telemetrix_uno_r4_wifi_aio
+        ├── __init__.py
+        ├── private_constants.py
+        ├── telemetrix_aio_ble.py
+        ├── telemetrix_aio_serial.py
+        ├── telemetrix_aio_socket.py
+        └── telemetrix_uno_r4_wifi_aio.py
+</code></pre>
+<p>This project consists of two main modules: one for the Arduino R4 Minima 
+microcontroller and the other for the Arduino R4 WIFI microcontroller.</p>
+<p>The minima module contains two submodules: <em>telemetrix_uno_r4_minima</em> for 
+the threaded API and <em>telemetrix_uno_r4_minima_aio</em> 
+for the asynchronous API.</p>
+<p>The wifi module also contains two submodules: 
+one for the threaded API, <em>telemetrix_uno_r4_wifi</em>, and the other for 
+the asynchronous API, <em>telemetrix_uno_r4_wifi_aio</em>.</p>
+<p>All four submodules contain a file called private_constants.py and a file that 
+defines the API class definition.  For the threaded Minima API, 
+this file is called <em>telemetrix_uno_r4_minima.py</em>, and we will look at 
+it after discussing the private constants file.</p>
+<p>The asyncio sub-modules contain one or more additional files that support a specific 
+data-link transport.</p>
+<p>This discussion will focus on the threaded API, 
+<em><a href="https://github.com/MrYsLab/telemetrix-uno-r4/tree/master/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima">telemetrix_uno_r4_minima</a></em>, 
+for the 
+Arduino R4 Minima microcontroller.</p>
+<h4 id="the-private-constants-file">The Private Constants File<a class="headerlink" href="#the-private-constants-file" title="Permanent link">&para;</a></h4>
+<p>All Telemetrix clients "define their constants" in a file 
+called <em>private_constants.py</em>.</p>
+<p>There isn't a built-in way to declare constants in Python like in some other languages 
+(e.g., using const in C++ or final in Java). 
+However, by convention, variables intended to be constants are named 
+using all uppercase letters with underscores separating words. 
+This convention serves as a signal that these values should not be changed.</p>
+<p>Let's look at
+<strong><em><a href="https://github.com/MrYsLab/telemetrix-uno-r4/blob/master/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/private_constants.py">private_constants.py</a></em></strong>
+for the Arduino R4 Minima microcontroller.</p>
+<pre><code class="language-aiignore">class PrivateConstants:
+    &quot;&quot;&quot;
+    This class contains a set of constants for telemetrix internal use .
+    &quot;&quot;&quot;
+
+    # commands
+    # send a loop back request - for debugging communications
+    LOOP_COMMAND = 0
+    SET_PIN_MODE = 1  # set a pin to INPUT/OUTPUT/PWM/etc
+    DIGITAL_WRITE = 2  # set a single digital pin value instead of entire port
+    ANALOG_WRITE = 3
+    MODIFY_REPORTING = 4
+    GET_FIRMWARE_VERSION = 5
+    ARE_U_THERE = 6  # Arduino ID query for auto-detect of telemetrix connected boards
+    SERVO_ATTACH = 7
+    SERVO_WRITE = 8
+    SERVO_DETACH = 9
+    I2C_BEGIN = 10
+    I2C_READ = 11
+    I2C_WRITE = 12
+    SONAR_NEW = 13
+    DHT_NEW = 14
+    STOP_ALL_REPORTS = 15
+    SET_ANALOG_SCANNING_INTERVAL = 16
+    ENABLE_ALL_REPORTS = 17
+    RESET = 18
+    SPI_INIT = 19
+    SPI_WRITE_BLOCKING = 20
+    SPI_READ_BLOCKING = 21
+    SPI_SET_FORMAT = 22
+    SPI_CS_CONTROL = 23
+    ONE_WIRE_INIT = 24
+    ONE_WIRE_RESET = 25
+    ONE_WIRE_SELECT = 26
+    ONE_WIRE_SKIP = 27
+    ONE_WIRE_WRITE = 28
+    ONE_WIRE_READ = 29
+    ONE_WIRE_RESET_SEARCH = 30
+    ONE_WIRE_SEARCH = 31
+    ONE_WIRE_CRC8 = 32
+    SET_PIN_MODE_STEPPER = 33
+    STEPPER_MOVE_TO = 34
+    STEPPER_MOVE = 35
+    STEPPER_RUN = 36
+    STEPPER_RUN_SPEED = 37
+    STEPPER_SET_MAX_SPEED = 38
+    STEPPER_SET_ACCELERATION = 39
+    STEPPER_SET_SPEED = 40
+    STEPPER_SET_CURRENT_POSITION = 41
+    STEPPER_RUN_SPEED_TO_POSITION = 42
+    STEPPER_STOP = 43
+    STEPPER_DISABLE_OUTPUTS = 44
+    STEPPER_ENABLE_OUTPUTS = 45
+    STEPPER_SET_MINIMUM_PULSE_WIDTH = 46
+    STEPPER_SET_ENABLE_PIN = 47
+    STEPPER_SET_3_PINS_INVERTED = 48
+    STEPPER_SET_4_PINS_INVERTED = 49
+    STEPPER_IS_RUNNING = 50
+    STEPPER_GET_CURRENT_POSITION = 51
+    STEPPER_GET_DISTANCE_TO_GO = 52
+    STEPPER_GET_TARGET_POSITION = 53
+    GET_FEATURES = 54
+    SONAR_DISABLE = 55
+    SONAR_ENABLE = 56
+    BOARD_HARD_RESET = 57
+
+    # reports
+    # debug data from Arduino
+    DIGITAL_REPORT = DIGITAL_WRITE
+    ANALOG_REPORT = ANALOG_WRITE
+    FIRMWARE_REPORT = GET_FIRMWARE_VERSION
+    I_AM_HERE_REPORT = ARE_U_THERE
+    SERVO_UNAVAILABLE = SERVO_ATTACH
+    I2C_TOO_FEW_BYTES_RCVD = 8
+    I2C_TOO_MANY_BYTES_RCVD = 9
+    I2C_READ_REPORT = 10
+    SONAR_DISTANCE = 11
+    DHT_REPORT = 12
+    SPI_REPORT = 13
+    ONE_WIRE_REPORT = 14
+    STEPPER_DISTANCE_TO_GO = 15
+    STEPPER_TARGET_POSITION = 16
+    STEPPER_CURRENT_POSITION = 17
+    STEPPER_RUNNING_REPORT = 18
+    STEPPER_RUN_COMPLETE_REPORT = 19
+    FEATURES = 20
+    DEBUG_PRINT = 99
+
+    TELEMETRIX_VERSION = &quot;1.1.1&quot;
+
+    # reporting control
+    REPORTING_DISABLE_ALL = 0
+    REPORTING_ANALOG_ENABLE = 1
+    REPORTING_DIGITAL_ENABLE = 2
+    REPORTING_ANALOG_DISABLE = 3
+    REPORTING_DIGITAL_DISABLE = 4
+
+    # Pin mode definitions
+    AT_INPUT = 0
+    AT_OUTPUT = 1
+    AT_INPUT_PULLUP = 2
+    AT_ANALOG = 3
+    AT_SERVO = 4
+    AT_SONAR = 5
+    AT_DHT = 6
+    AT_MODE_NOT_SET = 255
+
+    # maximum number of digital pins supported
+    NUMBER_OF_DIGITAL_PINS = 100
+
+    # maximum number of analog pins supported
+    NUMBER_OF_ANALOG_PINS = 20
+
+    # maximum number of sonars allowed
+    MAX_SONARS = 6
+
+    # maximum number of DHT devices allowed
+    MAX_DHTS = 6
+
+    # DHT Report sub-types
+    DHT_DATA = 0
+    DHT_ERROR = 1
+
+    # feature masks
+    ONEWIRE_FEATURE = 0x01
+    DHT_FEATURE = 0x02
+    STEPPERS_FEATURE = 0x04
+    SPI_FEATURE = 0x08
+    SERVO_FEATURE = 0x10
+    SONAR_FEATURE = 0x20
+</code></pre>
+<p>Many of the private constant file values are mirrored on the server.</p>
+<h5 id="command-ids">Command IDs<a class="headerlink" href="#command-ids" title="Permanent link">&para;</a></h5>
+<p>The first section of the file defines the command IDs. These values must match those 
+<a href="https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L119">defined in the server</a>.
+When adding a new feature, update the server with a command 
+ID of the same value.  Add the new feature ID after the last command ID in the file. </p>
+<h6 id="sonar-sidebar"><em>SONAR SIDEBAR</em><a class="headerlink" href="#sonar-sidebar" title="Permanent link">&para;</a></h6>
+<p>There are three command IDs associated with the HC-SR04 device.</p>
+<ul>
+<li>SONAR_NEW - commands the server to add a new entry to its 
+ "sonar table" and to start monitoring the device immediately.</li>
+<li>SONAR_DISABLE - commands the server to stop sending sonar reports.</li>
+<li>SONAR_ENABLE - commands the server to send sonar reports.</li>
+</ul>
+<h5 id="report-ids">Report IDs<a class="headerlink" href="#report-ids" title="Permanent link">&para;</a></h5>
+<p>The next section of the file defines the report IDs. These values must match those 
+<a href="https://github.com/MrYsLab/Telemetrix4UnoR4/blob/3629992d2c64da9b76eb5771d4c8933678149924/examples/Minima/Minima.ino#L398">defined in the server</a>.
+When adding a new report, update the server with a report ID of the same value. 
+Add the new report ID just before the DEBUG_PRINT ID.</p>
+<h6 id="sonar-sidebar_1"><em>SONAR SIDEBAR</em><a class="headerlink" href="#sonar-sidebar_1" title="Permanent link">&para;</a></h6>
+<p>The report ID for the HC-SR04 device is 11.</p>
+<h5 id="version-number">Version Number<a class="headerlink" href="#version-number" title="Permanent link">&para;</a></h5>
+<p>The version number comes next. It specifies the current version of the Telemetrix client.</p>
+<h5 id="reporting-control">Reporting Control<a class="headerlink" href="#reporting-control" title="Permanent link">&para;</a></h5>
+<p>Reporting control defines the values that can be used to disable or enable reporting.</p>
+<h5 id="pin-mode-definitions">Pin Mode Definitions<a class="headerlink" href="#pin-mode-definitions" title="Permanent link">&para;</a></h5>
+<p>This section defines the pin mode values.</p>
+<h5 id="maximum-number-of-digital-pins">Maximum Number of Digital Pins<a class="headerlink" href="#maximum-number-of-digital-pins" title="Permanent link">&para;</a></h5>
+<p>This value defines the maximum number of digital pins supported by the client.</p>
+<h5 id="maximum-number-of-analog-pins">Maximum Number of Analog Pins<a class="headerlink" href="#maximum-number-of-analog-pins" title="Permanent link">&para;</a></h5>
+<p>This value defines the maximum number of analog pins supported by the client.</p>
+<h5 id="maximum-number-of-specific-devices-supported">Maximum Number of Specific Devices supported<a class="headerlink" href="#maximum-number-of-specific-devices-supported" title="Permanent link">&para;</a></h5>
+<p>The maximum number of SONARs and DHT temperature/humidity sensors supported by the 
+client.</p>
+<h6 id="sonar-sidebar_2"><em>SONAR SIDEBAR</em><a class="headerlink" href="#sonar-sidebar_2" title="Permanent link">&para;</a></h6>
+<p>The client supports a maximum of 6 SONAR devices.</p>
+<h5 id="dht-report-sub-types">DHT Report Sub-Types<a class="headerlink" href="#dht-report-sub-types" title="Permanent link">&para;</a></h5>
+<p>A DHT report can contain a valid temperature/humidity reading, 
+or the device may report an error.
+This section defines the two sub-types.</p>
+<h5 id="feature-masks">Feature Masks<a class="headerlink" href="#feature-masks" title="Permanent link">&para;</a></h5>
+<p>This section defines the feature masks. 
+These masks allow us to determine which features the client supports. </p>
+<h6 id="sonar-sidebar_3"><em>SONAR SIDEBAR</em><a class="headerlink" href="#sonar-sidebar_3" title="Permanent link">&para;</a></h6>
+<p>The feature mask for the Servo device is 0x20.</p>
+<h4 id="the-api-class-definition">The API Class Definition<a class="headerlink" href="#the-api-class-definition" title="Permanent link">&para;</a></h4>
+<p>All Telemetrix API class definitions are very similar. Once you understand
+the API class definition
+<a href="https://github.com/MrYsLab/telemetrix-uno-r4/blob/master/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py">telemetrix_uno_r4_minima.py</a>,
+you will be prepared to understand all other Telemetrix API class definitions.</p>
+<p>Let's look at telemetrix_uno_r4_minima.py section by section.</p>
+<h5 id="init-method">Init Method<a class="headerlink" href="#init-method" title="Permanent link">&para;</a></h5>
+<pre><code class="language-aiignore">class TelemetrixUnoR4Minima(threading.Thread):
+    &quot;&quot;&quot;
+    This class exposes and implements the telemetrix API.
+    It uses threading to accommodate concurrency.
+    It includes the public API methods as well as
+    a set of private methods.
+
+    &quot;&quot;&quot;
+
+    # noinspection PyPep8,PyPep8,PyPep8
+    def __init__(self, com_port=None, arduino_instance_id=1,
+                 arduino_wait=1, sleep_tune=0.000001,
+                 shutdown_on_exception=True, hard_reset_on_shutdown=True):
+
+        &quot;&quot;&quot;
+
+        :param com_port: e.g. COM3 or /dev/ttyACM0.
+                         Only use if you wish to bypass auto com port
+                         detection.
+
+        :param arduino_instance_id: Match with the value installed on the
+                                    arduino-telemetrix sketch.
+
+        :param arduino_wait: Amount of time to wait for an Arduino to
+                             fully reset itself.
+
+        :param sleep_tune: A tuning parameter (typically not changed by user)
+
+        :param shutdown_on_exception: call shutdown before raising
+                                      a RunTimeError exception, or
+                                      receiving a KeyboardInterrupt exception
+
+        :param hard_reset_on_shutdown: reset the board on shutdown
+
+        &quot;&quot;&quot;
+
+        # initialize threading parent
+        threading.Thread.__init__(self)
+
+        # create the threads and set them as daemons so
+        # that they stop when the program is closed
+
+        # create a thread to interpret received serial data
+        self.the_reporter_thread = threading.Thread(target=self._reporter)
+        self.the_reporter_thread.daemon = True
+
+        self.the_data_receive_thread = threading.Thread(target=self._serial_receiver)
+
+        self.the_data_receive_thread.daemon = True
+
+        # flag to allow the reporter and receive threads to run.
+        self.run_event = threading.Event()
+</code></pre>
+<p>The init method begins by creating the reporter and receive threads and sets them as 
+daemons.
+It also 
+creates the run_event flag for thread synchronization.</p>
+<p>Next, it saves all the parameters passed to the init method.</p>
+<pre><code class="language-aiignore">        # save input parameters as instance variables
+        self.com_port = com_port
+        self.arduino_instance_id = arduino_instance_id
+        self.arduino_wait = arduino_wait
+        self.sleep_tune = sleep_tune
+        self.shutdown_on_exception = shutdown_on_exception
+        self.hard_reset_on_shutdown = hard_reset_on_shutdown
+</code></pre>
+<p>then, it creates a dequeue object to hold the received data.</p>
+<pre><code class="language-aiignore"># create a deque to receive and process data from the arduino
+        self.the_deque = deque()
+</code></pre>
+<p>A report dispatch table is created as a dictionary. Each entry in the dictionary 
+is a tuple of the report ID as the key and the report processing function as its value.</p>
+<h6 id="adding-a-new-report">Adding A New Report<a class="headerlink" href="#adding-a-new-report" title="Permanent link">&para;</a></h6>
+<p>When adding a new report, add a new entry to the report dispatch table.</p>
+<pre><code class="language-aiignore">
+        # The report_dispatch dictionary is used to process
+        # incoming report messages by looking up the report message
+        # and executing its associated processing method.
+
+        self.report_dispatch = {}
+
+        # To add a command to the command dispatch table, append here.
+        self.report_dispatch.update(
+            {PrivateConstants.LOOP_COMMAND: self._report_loop_data})
+        self.report_dispatch.update(
+            {PrivateConstants.DEBUG_PRINT: self._report_debug_data})
+        self.report_dispatch.update(
+            {PrivateConstants.DIGITAL_REPORT: self._digital_message})
+        self.report_dispatch.update(
+            {PrivateConstants.ANALOG_REPORT: self._analog_message})
+        self.report_dispatch.update(
+            {PrivateConstants.FIRMWARE_REPORT: self._firmware_message})
+        self.report_dispatch.update({PrivateConstants.I_AM_HERE_REPORT: self._i_am_here})
+        self.report_dispatch.update(
+            {PrivateConstants.SERVO_UNAVAILABLE: self._servo_unavailable})
+        self.report_dispatch.update(
+            {PrivateConstants.I2C_READ_REPORT: self._i2c_read_report})
+        self.report_dispatch.update(
+            {PrivateConstants.I2C_TOO_FEW_BYTES_RCVD: self._i2c_too_few})
+        self.report_dispatch.update(
+            {PrivateConstants.I2C_TOO_MANY_BYTES_RCVD: self._i2c_too_many})
+        self.report_dispatch.update(
+            {PrivateConstants.SONAR_DISTANCE: self._sonar_distance_report})
+        self.report_dispatch.update({PrivateConstants.DHT_REPORT: self._dht_report})
+        self.report_dispatch.update(
+            {PrivateConstants.SPI_REPORT: self._spi_report})
+        self.report_dispatch.update(
+            {PrivateConstants.ONE_WIRE_REPORT: self._onewire_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_DISTANCE_TO_GO:
+                 self._stepper_distance_to_go_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_TARGET_POSITION:
+                 self._stepper_target_position_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_CURRENT_POSITION:
+                 self._stepper_current_position_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_RUNNING_REPORT:
+                 self._stepper_is_running_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_RUN_COMPLETE_REPORT:
+                 self._stepper_run_complete_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_DISTANCE_TO_GO:
+                 self._stepper_distance_to_go_report})
+        self.report_dispatch.update(
+            {PrivateConstants.STEPPER_TARGET_POSITION:
+                 self._stepper_target_position_report})
+        self.report_dispatch.update(
+            {PrivateConstants.FEATURES:
+                 self._features_report})
+</code></pre>
+<h6 id="sonar-sidebar_4">&nbsp;&nbsp;&nbsp;     <em>SONAR SIDEBAR</em><a class="headerlink" href="#sonar-sidebar_4" title="Permanent link">&para;</a></h6>
+<p>The HC-SR04 device is added to the report dispatch table, as shown below.</p>
+<pre><code class="language-aiignore">self.report_dispatch.update(
+            {PrivateConstants.SONAR_DISTANCE: self._sonar_distance_report})
+</code></pre>
+<p>Storage is allocated for the various callback functions. </p>
+<pre><code class="language-aiignore">        # dictionaries to store the callbacks for each pin
+        self.analog_callbacks = {}
+
+        self.digital_callbacks = {}
+
+        self.i2c_callback = None
+        self.i2c_callback2 = None
+
+        self.i2c_1_active = False
+        self.i2c_2_active = False
+
+        self.spi_callback = None
+
+        self.onewire_callback = None
+
+        self.cs_pins_enabled = []
+
+        # the trigger pin will be the key to retrieve
+        # the callback for a specific HC-SR04
+        self.sonar_callbacks = {}
+
+        self.sonar_count = 0
+
+        self.dht_callbacks = {}
+
+        self.dht_count = 0
+</code></pre>
+<p>In addition, an empty list, self.the cs_pins_enabled variable
+is created to store valid SPI chip select pins.</p>
+<p>Also, 
+feature-specific variables, such as self.dht_count, 
+store the number of enabled DHT modules.</p>
+<h6 id="example-hc-sr04">&nbsp;&nbsp;&nbsp;     Example - HC-SR04<a class="headerlink" href="#example-hc-sr04" title="Permanent link">&para;</a></h6>
+<h6 id="sonar-sidebar_5">&nbsp;&nbsp;&nbsp;      <strong><em>SONAR SIDEBAR</em></strong><a class="headerlink" href="#sonar-sidebar_5" title="Permanent link">&para;</a></h6>
+<p>For the HC-SR04 SONAR device, the following variables are created:</p>
+<ul>
+<li><strong>sonar_callbacks</strong> - A dictionary to store the callback 
+functions for each SONAR with the 
+trigger pin is used as a key.</li>
+<li><strong>sonar_count</strong> - A counter to keep track of the number of registered sonars.</li>
+</ul>
+<p>The <em>init</em> method continues allocating storage. The code's comments explain these 
+instance 
+variables.</p>
+<pre><code class="language-aiignore">        # serial port in use
+        self.serial_port = None
+
+        # flag to indicate we are in shutdown mode
+        self.shutdown_flag = False
+
+        # debug loopback callback method
+        self.loop_back_callback = None
+
+        # firmware version to be stored here
+        self.firmware_version = []
+
+        # reported arduino instance id
+        self.reported_arduino_id = []
+
+        # reported features
+        self.reported_features = 0
+
+        # flag to indicate if i2c was previously enabled
+        self.i2c_enabled = False
+
+        # flag to indicate if spi is initialized
+        self.spi_enabled = False
+
+        # flag to indicate if onewire is initialized
+        self.onewire_enabled = False
+
+</code></pre>
+<p>Next, the <em>init</em> method starts the reporter thread, and the data receive thread.</p>
+<pre><code class="language-aiignore">        self.the_reporter_thread.start()
+        self.the_data_receive_thread.start()
+</code></pre>
+<p>The <em>data_receive_thread</em> is implemented in the
+<a href="https://github.com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L2532">__serial_receiver_ method</a>.</p>
+<p>The reporter thread is implemented using the 
+<a href="https://github.com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L2488">__reporter_</a> method.</p>
+<p>Since Python does not support the concept of a private method,
+a single underscore before the method name serves as a visual indicator that the method is
+to be considered private. </p>
+<h6 id="the-_serial_receiver">The _serial_receiver<a class="headerlink" href="#the-_serial_receiver" title="Permanent link">&para;</a></h6>
+<p>The _serial_receiver method reads data from the server, 
+byte by byte, and appends each byte to the deque.</p>
+<pre><code class="language-aiignore">    def _serial_receiver(self):
+        &quot;&quot;&quot;
+        Thread to continuously check for incoming data.
+        When a byte comes in, place it onto the deque.
+        &quot;&quot;&quot;
+        self.run_event.wait()
+
+        # Don't start this thread if using a tcp/ip transport
+
+        while self._is_running() and not self.shutdown_flag:
+            # we can get an OSError: [Errno9] Bad file descriptor when shutting down
+            # just ignore it
+            try:
+                if self.serial_port.inWaiting():
+                    c = self.serial_port.read()
+                    self.the_deque.append(ord(c))
+                    # print(ord(c))
+                else:
+                    time.sleep(self.sleep_tune)
+                    # continue
+            except OSError:
+                pass
+
+</code></pre>
+<h6 id="the-_reporter">The _reporter<a class="headerlink" href="#the-_reporter" title="Permanent link">&para;</a></h6>
+<p>The reporter thread checks to see if anything is on the deque.</p>
+<p>It assembles the response_data list containing the 
+report data passed to an appropriate callback function.</p>
+<pre><code class="language-aiignore">    def _reporter(self):
+        &quot;&quot;&quot;
+        This is the reporter thread. It continuously pulls data from
+        the deque. When a full message is detected, that message is
+        processed.
+        &quot;&quot;&quot;
+        self.run_event.wait()
+
+        while self._is_running() and not self.shutdown_flag:
+            if len(self.the_deque):
+                # response_data will be populated with the received data for the report
+                response_data = []
+                packet_length = self.the_deque.popleft()
+                if packet_length:
+                    # get all the data for the report and place it into response_data
+                    for i in range(packet_length):
+                        while not len(self.the_deque):
+                            time.sleep(self.sleep_tune)
+                        data = self.the_deque.popleft()
+                        response_data.append(data)
+
+                    # print(f'response_data {response_data}')
+
+                    # get the report type and look up its dispatch method
+                    # here we pop the report type off of response_data
+                    report_type = response_data.pop(0)
+                    # print(f' reported type {report_type}')
+
+                    # retrieve the report handler from the dispatch table
+                    dispatch_entry = self.report_dispatch.get(report_type)
+
+                    # if there is additional data for the report,
+                    # it will be contained in response_data
+                    # noinspection PyArgumentList
+                    dispatch_entry(response_data)
+                    continue
+                else:
+                    if self.shutdown_on_exception:
+                        self.shutdown()
+                    raise RuntimeError(
+                        'A report with a packet length of zero was received.')
+            else:
+                time.sleep(self.sleep_tune)
+</code></pre>
+<h6 id="establishing-a-transport-link">Establishing A Transport Link<a class="headerlink" href="#establishing-a-transport-link" title="Permanent link">&para;</a></h6>
+<p>In this code section, an attempt is made to establish a serial transport link.</p>
+<p>When instantiating TelemetrixUnoR4Minima, if the com_port parameter is not specified,
+an attempt is made to find a connected device by calling 
+<strong>_<a href="https://github.com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L318">find_arduino</a></strong>.</p>
+<p>If the <em>com_port</em> parameter is specified, then an attempt to 
+connect to that com_port is made.</p>
+<p>If the connection is successful, then threads are allowed to run.</p>
+<pre><code class="language-aiignore">       # using the serial link
+        if not self.com_port:
+            # user did not specify a com_port
+            try:
+                self._find_arduino()
+            except KeyboardInterrupt:
+                if self.shutdown_on_exception:
+                    self.shutdown()
+        else:
+            # com_port specified - set com_port and baud rate
+            try:
+                self._manual_open()
+            except KeyboardInterrupt:
+                if self.shutdown_on_exception:
+                    self.shutdown()
+
+        if self.serial_port:
+            print(
+                f&quot;Arduino compatible device found and connected to {self.serial_port.port}&quot;)
+
+            self.serial_port.reset_input_buffer()
+            self.serial_port.reset_output_buffer()
+
+        # no com_port found - raise a runtime exception
+        else:
+            if self.shutdown_on_exception:
+                self.shutdown()
+            raise RuntimeError('No Arduino Found or User Aborted Program')
+
+        # allow the threads to run
+        self._run_threads()
+
+</code></pre>
+<h6 id="retrieving-the-firmware-version-from-the-server-and-proceeding">Retrieving The Firmware Version From The Server And Proceeding<a class="headerlink" href="#retrieving-the-firmware-version-from-the-server-and-proceeding" title="Permanent link">&para;</a></h6>
+<p>The client sends a command to retrieve the server's version number. 
+If successful, it will retrieve the features supported by the server.</p>
+<p>Finally, a command is sent to reset the server's working data structures.</p>
+<pre><code class="language-aiignore">        # get telemetrix firmware version and print it
+        print('\nRetrieving Telemetrix4UnoR4Minima firmware ID...')
+        self._get_firmware_version()
+        if not self.firmware_version:
+            if self.shutdown_on_exception:
+                self.shutdown()
+            raise RuntimeError(f'Telemetrix4UnoR4Minima firmware version')
+
+        else:
+
+            print(f'Telemetrix4UnoR4Minima firmware version: {self.firmware_version[0]}.'
+                  f'{self.firmware_version[1]}.{self.firmware_version[2]}')
+        command = [PrivateConstants.ENABLE_ALL_REPORTS]
+        self._send_command(command)
+
+        # get the features list
+        command = [PrivateConstants.GET_FEATURES]
+        self._send_command(command)
+        time.sleep(.2)
+
+        # Have the server reset its data structures
+        command = [PrivateConstants.RESET]
+        self._send_command(command)
+</code></pre>
+<h5 id="the-api-command-methods">The API Command Methods<a class="headerlink" href="#the-api-command-methods" title="Permanent link">&para;</a></h5>
+<p>The <a href="https://github.
+com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L412">next section of the code</a>
+implements all the API command methods, including any "private" support methods.</p>
+<h6 id="sonar-sidebar_6">&nbsp;&nbsp;&nbsp;      <strong><em>SONAR SIDEBAR</em></strong><a class="headerlink" href="#sonar-sidebar_6" title="Permanent link">&para;</a></h6>
+<p>The code for the three HC-SR04 commands may be found here:</p>
+<ul>
+<li><a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/#telemetrix_uno_r4_minima.TelemetrixUnoR4Minima.set_pin_mode_sonar">set_pin_mode_sonar</a></li>
+<li><a href="https://github.com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L1750">sonar_enable</a></li>
+<li><a href="https://github.com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L1743">sonar_disable</a></li>
+</ul>
+<h5 id="the-report-handler-methods">The Report Handler Methods<a class="headerlink" href="#the-report-handler-methods" title="Permanent link">&para;</a></h5>
+<p><a href="https://github.
+com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L2110">This section of the code</a>
+implements all the report handlers.</p>
+<h6 id="sonar-sidebar_7">&nbsp;&nbsp;&nbsp;      <strong><em>SONAR SIDEBAR</em></strong><a class="headerlink" href="#sonar-sidebar_7" title="Permanent link">&para;</a></h6>
+<p>The code for the SONAR distance report is implemented
+<a href="https://github.com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L2336">here.</a></p>
+<h2 id="the-next-posting">The Next Posting<a class="headerlink" href="#the-next-posting" title="Permanent link">&para;</a></h2>
+<p>We've completed the discussion of the Telemetrix API client. 
+In the next post, we will summarize how to add new features.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">Comments</h2>
+  <!-- Insert generated snippet here -->
+<script src="https://giscus.app/client.js"
+        data-repo="MrYsLab/bits-n-bots"
+        data-repo-id="R_kgDOK6KUpA"
+        data-category="General"
+        data-category-id="DIC_kwDOK6KUpM4Cbw4k"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        crossorigin="anonymous"
+        async>
+</script>
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme)
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../22/telemetrix-under-the-hood--part-3/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Telemetrix Under The Hood  Part 3">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Telemetrix Under The Hood  Part 3
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../25/telemetrix-under-the-hood-part-5/" class="md-footer__link md-footer__link--next" aria-label="Next: Telemetrix Under The Hood Part 5">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Telemetrix Under The Hood Part 5
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2023-2025 Alan Yorinks
+
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+    <a href="mailto:MisterYsLab@gmail.com" target="_blank" rel="noopener" title="" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4l217.6 163.2c11.4 8.5 27 8.5 38.4 0l217.6-163.2c12.1-9.1 19.2-23.3 19.2-38.4 0-26.5-21.5-48-48-48zM0 176v208c0 35.3 28.7 64 64 64h384c35.3 0 64-28.7 64-64V176L294.4 339.2a63.9 63.9 0 0 1-76.8 0z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/MrYsLab" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/mryslab.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M111.8 62.2C170.2 105.9 233 194.7 256 242.4c23-47.6 85.8-136.4 144.2-180.2 42.1-31.6 110.3-56 110.3 21.8 0 15.5-8.9 130.5-14.1 149.2-18.2 64.8-84.4 81.4-143.3 71.3C456 322 482.2 380 425.6 438c-107.4 110.2-154.3-27.6-166.3-62.9-1.7-4.9-2.6-7.8-3.3-7.8s-1.6 3-3.3 7.8c-12 35.3-59 173.1-166.3 62.9-56.5-58-30.4-116 72.5-133.5C100 314.6 33.8 298 15.7 233.1 10.4 214.4 1.5 99.4 1.5 83.9c0-77.8 68.2-53.4 110.3-21.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.footer", {"scheme": "slate", "toggle": {"icon": "material/brightness-4", "name": "Switch to light mode"}}], "search": "../../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+        <script src="../../../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

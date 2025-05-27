@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="What is happening in the lab!">
+        <meta name="description" content="Mr. Y's Lab blog.">
       
       
         <meta name="author" content="Alan Yorinks">
@@ -16,11 +16,11 @@
       
       
       
-        <link rel="next" href="category/welcome/">
+        <link rel="next" href="category/telemetrix-internals/">
       
       
       <link rel="icon" href="assets/images/logo.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.2">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.50c56a3b.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.342714a4.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
@@ -50,7 +50,7 @@
       
     
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -59,7 +59,7 @@
   
   
 
-<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-72FWR7622V"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-72FWR7622V",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-72FWR7622V",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-72FWR7622V"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-72FWR7622V",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-72FWR7622V",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
   
     <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
   
@@ -69,9 +69,9 @@
       
         <meta  property="og:type"  content="website" >
       
-        <meta  property="og:title"  content="Home" >
+        <meta  property="og:title"  content="Bits 'n Bots" >
       
-        <meta  property="og:description"  content="What is happening in the lab!" >
+        <meta  property="og:description"  content="Mr. Y's Lab blog." >
       
         <meta  property="og:image"  content="https://mryslab.github.io/bits-n-bots/assets/images/social/index.png" >
       
@@ -85,9 +85,9 @@
       
         <meta  name="twitter:card"  content="summary_large_image" >
       
-        <meta  name="twitter:title"  content="Home" >
+        <meta  name="twitter:title"  content="Bits 'n Bots" >
       
-        <meta  name="twitter:description"  content="What is happening in the lab!" >
+        <meta  name="twitter:description"  content="Mr. Y's Lab blog." >
       
         <meta  name="twitter:image"  content="https://mryslab.github.io/bits-n-bots/assets/images/social/index.png" >
       
@@ -103,13 +103,18 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -130,7 +135,7 @@
     </a>
     <label class="md-header__button md-icon" for="__drawer">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -155,20 +160,10 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label=""  type="radio" name="__palette" id="__palette_0">
     
-      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
-      </label>
-    
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
-    
-      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      <label class="md-header__button md-icon" title="" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
       </label>
     
   
@@ -176,36 +171,38 @@
       
     
     
-      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
-      <label class="md-header__button md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
-      </label>
-      <div class="md-search" data-md-component="search" role="dialog">
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
       </nav>
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
@@ -216,6 +213,7 @@
     </div>
   </div>
 </div>
+      
     
     
   </nav>
@@ -270,16 +268,106 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="." class="md-nav__link md-nav__link--active">
         
   
+  
   <span class="md-ellipsis">
     Home
+    
   </span>
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#telemetrix-under-the-hood-part-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Telemetrix Under The Hood Part 5
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#telemetrix-under-the-hood-part-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Telemetrix Under The Hood Part 4
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#telemetrix-under-the-hood-part-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Telemetrix Under The Hood Part 3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#telemetrix-under-the-hood-part-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Telemetrix Under The Hood Part 2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#telemetrix-under-the-hood-part-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Telemetrix Under The Hood Part 1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#welcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      Welcome
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -300,15 +388,16 @@
       
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
     Archive
+    
   </span>
   
 
@@ -331,11 +420,38 @@
   
   
     <li class="md-nav__item">
+      <a href="archive/2025/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2025
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
       <a href="archive/2023/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     2023
+    
   </span>
   
 
@@ -367,15 +483,16 @@
       
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
     Categories
+    
   </span>
   
 
@@ -398,11 +515,38 @@
   
   
     <li class="md-nav__item">
+      <a href="category/telemetrix-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Telemetrix Internals
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
       <a href="category/welcome/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Welcome
+    
   </span>
   
 
@@ -436,6 +580,70 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#telemetrix-under-the-hood-part-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Telemetrix Under The Hood Part 5
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#telemetrix-under-the-hood-part-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Telemetrix Under The Hood Part 4
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#telemetrix-under-the-hood-part-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Telemetrix Under The Hood Part 3
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#telemetrix-under-the-hood-part-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Telemetrix Under The Hood Part 2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#telemetrix-under-the-hood-part-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Telemetrix Under The Hood Part 1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#welcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      Welcome
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -447,7 +655,8 @@
   <div class="md-content" data-md-component="content">
     <div class="md-content__inner">
       <header class="md-typeset">
-        <div style="text-align:center;color:#00c323   ; font-family:times, serif;font-size:5.2em"><b>Bits 'N Bots</b></div>
+        <h1 id="_1"><a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<div style="text-align:center;color:#00c323   ; font-family:times, serif;font-size:5.2em"><b>Bits 'N Bots</b></div>
 <div style="text-align:center;color:#00c323; font-family:times, serif;font-size:3.2em"><i>The Official Blog Of Mr. Y's Lab </i></div>
 
 <p><img 
@@ -467,7 +676,296 @@
     <div class="md-post__meta md-meta">
       <ul class="md-meta__list">
         <li class="md-meta__item">
-          <time datetime="2023-12-14 00:00:00">December 14, 2023</time></li>
+          <time datetime="2025-05-25 00:00:00+00:00">May 25, 2025</time></li>
+        
+          <li class="md-meta__item">
+            in
+            
+              <a href="category/telemetrix-internals/" class="md-meta__link">Telemetrix Internals</a></li>
+        
+        
+          
+          <li class="md-meta__item">
+            
+              2 min read
+            
+          </li>
+        
+      </ul>
+      
+    </div>
+  </header>
+  <div class="md-post__content md-typeset">
+    <h2 id="telemetrix-under-the-hood-part-5"><a class="toclink" href="2025/05/25/telemetrix-under-the-hood-part-5/">Telemetrix Under The Hood Part 5</a></h2>
+<p><img alt="" src="assets/images/summary.png" /></p>
+<h3 id="summarizing-adding-new-features"><a class="toclink" href="2025/05/25/telemetrix-under-the-hood-part-5/#summarizing-adding-new-features">Summarizing - Adding New Features</a></h3>
+<p>Let's quickly summarize the steps needed to add new features to Telemetrix.</p>
+
+    
+      <nav class="md-post__action">
+        <a href="2025/05/25/telemetrix-under-the-hood-part-5/">
+          Continue reading
+        </a>
+      </nav>
+    
+  </div>
+</article>
+      
+        <article class="md-post md-post--excerpt">
+  <header class="md-post__header">
+    
+    <div class="md-post__meta md-meta">
+      <ul class="md-meta__list">
+        <li class="md-meta__item">
+          <time datetime="2025-05-23 00:00:00+00:00">May 23, 2025</time></li>
+        
+          <li class="md-meta__item">
+            in
+            
+              <a href="category/telemetrix-internals/" class="md-meta__link">Telemetrix Internals</a></li>
+        
+        
+          
+          <li class="md-meta__item">
+            
+              15 min read
+            
+          </li>
+        
+      </ul>
+      
+    </div>
+  </header>
+  <div class="md-post__content md-typeset">
+    <h2 id="telemetrix-under-the-hood-part-4"><a class="toclink" href="2025/05/23/telemetrix-under-the-hood--part-4/">Telemetrix Under The Hood  Part 4</a></h2>
+<p><img alt="" src="assets/images/api.png" width="450" /></p>
+<h3 id="the-telemetrix-python-client-api"><a class="toclink" href="2025/05/23/telemetrix-under-the-hood--part-4/#the-telemetrix-python-client-api">The Telemetrix Python Client API</a></h3>
+<p>This post will explore the implementation of the
+<a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/">Telemetrix Python client API</a>
+for the Arduino UNO R4 Minima. To help focus the discussion, 
+we will again use the <strong>HC-SR04 SONAR distance sensor</strong> feature as an example.
+Please search for the <strong><em>SONAR SIDEBAR</em></strong> heading to make the discussions about this 
+feature easier to find.</p>
+<p>Although this discussion is specific to the Arduino UNO R4 Minima client API, all
+Telemetrix client APIs are very similar, so you should be able to apply the information 
+in this post to any other Telemetrix client API.</p>
+<p>The Telemetrix framework aims to provide an experience as close to 
+real-time as possible.
+To achieve this goal, a Telemetrix client implements concurrency and callback schemes.</p>
+<h4 id="concurrency"><a class="toclink" href="2025/05/23/telemetrix-under-the-hood--part-4/#concurrency">Concurrency</a></h4>
+<p>Concurrency refers to a system's ability to execute multiple tasks 
+through simultaneous execution or time-sharing (context switching), 
+sharing resources, and managing interactions. It improves responsiveness, 
+throughput, and scalability.</p>
+<p>A Telemetrix client has three primary operations competing for the processor's attention.</p>
+<p>Those operations are:</p>
+<ul>
+<li>Process the on-demand API command requests.</li>
+<li>Receive and buffer reports sent from the Telemetrix server over the transport link.</li>
+<li>Process the data contained in the buffered reports.</li>
+</ul>
+<p>Concurrency allows the client to send command messages to the server while retrieving 
+and buffering server reports and processing the buffered 
+reports. All these operations are performed with minimal blocking to 
+ensure the application is highly reactive.</p>
+<p>Concurrency is implemented using one of two Python concurrency schemes.</p>
+<p>For the 
+<a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference/">TelemetrixUnoR4Minima</a>
+threaded API, 
+<a href="https://docs.python.org/3/library/threading.html">Python threading</a>
+and a 
+Python <a href="https://docs.python.org/3/library/collections.html#collections.deque"><em>deque</em></a> 
+are deployed. A deque, which stands for double-ended queue, is a 
+data structure that allows you to add and remove items from either end of the queue. It
+is thread-safe and part of the Python standard library.</p>
+<p>For the
+<a href="https://mryslab.github.io/telemetrix-uno-r4/telemetrix_minima_reference_aio/">TelemetrixUnoR4MinimaAio</a>
+asynchronous API, 
+<a href="https://docs.python.org/3/library/asyncio.html">Python asyncio</a> is used to implement 
+concurrency.</p>
+
+    
+      <nav class="md-post__action">
+        <a href="2025/05/23/telemetrix-under-the-hood--part-4/">
+          Continue reading
+        </a>
+      </nav>
+    
+  </div>
+</article>
+      
+        <article class="md-post md-post--excerpt">
+  <header class="md-post__header">
+    
+    <div class="md-post__meta md-meta">
+      <ul class="md-meta__list">
+        <li class="md-meta__item">
+          <time datetime="2025-05-22 00:00:00+00:00">May 22, 2025</time></li>
+        
+          <li class="md-meta__item">
+            in
+            
+              <a href="category/telemetrix-internals/" class="md-meta__link">Telemetrix Internals</a></li>
+        
+        
+          
+          <li class="md-meta__item">
+            
+              14 min read
+            
+          </li>
+        
+      </ul>
+      
+    </div>
+  </header>
+  <div class="md-post__content md-typeset">
+    <h2 id="telemetrix-under-the-hood-part-3"><a class="toclink" href="2025/05/22/telemetrix-under-the-hood--part-3/">Telemetrix Under The Hood  Part 3</a></h2>
+<p><img alt="" src="assets/images/server.png" /></p>
+<h2 id="understanding-the-telemetrix-server"><a class="toclink" href="2025/05/22/telemetrix-under-the-hood--part-3/#understanding-the-telemetrix-server">Understanding The Telemetrix Server</a></h2>
+<h3 id="introduction"><a class="toclink" href="2025/05/22/telemetrix-under-the-hood--part-3/#introduction">Introduction</a></h3>
+<p>Let's examine the 
+<a href="https://github.com/MrYsLab/Telemetrix4UnoR4/blob/master/examples/Minima/Minima.ino">Telemetrix server code</a> 
+for the Arduino UNO R4 Minima,</p>
+<p>Why select the server for the Minima and not another board?</p>
+<p>The Minima is one of the newer boards in the Arduino family, 
+so we chose it to highlight a Telemetrix server design.
+However, all Telemetrix servers are remarkably similar. 
+The discussion below would be almost identical if any other server were chosen.
+Once you learn about one Telemetrix server, you are fully prepared to understand them all.
+This post will examine the file's structure, major data structures, and internal workings.</p>
+<h4 id="a-feature-reference-point"><a class="toclink" href="2025/05/22/telemetrix-under-the-hood--part-3/#a-feature-reference-point">A Feature Reference Point</a></h4>
+<p><img alt="" src="assets/images/HC-SR04.jpeg" /></p>
+<p>One main reason for understanding the internal workings of a Telemetrix 
+server is to be able to add support for a new sensor or actuator.</p>
+<p>To this end, the HC-SR04 SONAR distance sensor illustrates the 
+areas of server code affected by adding sensor support. Adding actuator support
+is very similar to adding sensor support. </p>
+<p>Why the HC-SR04? Because it highlights some of the finer points
+of adding a new feature, such as:</p>
+<ul>
+<li>Device instantiation.</li>
+<li>Continuous non-blocking timed polling of the device.</li>
+<li>Generating reports for data changes.</li>
+</ul>
+<p>All these things will be uncovered as we proceed with the discussion.
+Search for the heading <em><strong>SONAR SIDEBAR</strong></em> to make the HC-SR04-specific 
+discussions easier to find within the post.</p>
+
+    
+      <nav class="md-post__action">
+        <a href="2025/05/22/telemetrix-under-the-hood--part-3/">
+          Continue reading
+        </a>
+      </nav>
+    
+  </div>
+</article>
+      
+        <article class="md-post md-post--excerpt">
+  <header class="md-post__header">
+    
+    <div class="md-post__meta md-meta">
+      <ul class="md-meta__list">
+        <li class="md-meta__item">
+          <time datetime="2025-05-21 00:00:00+00:00">May 21, 2025</time></li>
+        
+          <li class="md-meta__item">
+            in
+            
+              <a href="category/telemetrix-internals/" class="md-meta__link">Telemetrix Internals</a></li>
+        
+        
+          
+          <li class="md-meta__item">
+            
+              4 min read
+            
+          </li>
+        
+      </ul>
+      
+    </div>
+  </header>
+  <div class="md-post__content md-typeset">
+    <h2 id="telemetrix-under-the-hood-part-2"><a class="toclink" href="2025/05/21/telemetrix-under-the-hood-part-2/">Telemetrix Under The Hood Part 2</a></h2>
+<h3 id="understanding-telemetrix-messaging"><a class="toclink" href="2025/05/21/telemetrix-under-the-hood-part-2/#understanding-telemetrix-messaging">Understanding Telemetrix Messaging</a></h3>
+<p><img alt="" src="assets/images/tmx.png" /></p>
+<p>A Telemetrix Python client and a Telemetrix microprocessor-resident server communicate
+by exchanging messages over a data transport link. </p>
+<p>The type of transport link that is used is dependent upon the capabilities
+of the server hardware.</p>
+<p>For example, this is a serial/USB link for the Arduino UNO R4 Minima. 
+For the Arduino UNO R4 WIFI, Serial/USB, WIFI, and BLE links are supported.</p>
+<p>Message creation, interpretation, and transfer are performed behind 
+the scenes and are hidden from the application developer. Therefore, 
+when creating your application, you need not be concerned with internal messaging details.</p>
+<p>However, if you wish to extend Telemetrix's functionality, 
+you will need to understand the details of Telemetrix messaging.</p>
+<p>This posting will look at the two message types and their formats.</p>
+
+    
+      <nav class="md-post__action">
+        <a href="2025/05/21/telemetrix-under-the-hood-part-2/">
+          Continue reading
+        </a>
+      </nav>
+    
+  </div>
+</article>
+      
+        <article class="md-post md-post--excerpt">
+  <header class="md-post__header">
+    
+    <div class="md-post__meta md-meta">
+      <ul class="md-meta__list">
+        <li class="md-meta__item">
+          <time datetime="2025-05-20 00:00:00+00:00">May 20, 2025</time></li>
+        
+          <li class="md-meta__item">
+            in
+            
+              <a href="category/telemetrix-internals/" class="md-meta__link">Telemetrix Internals</a></li>
+        
+        
+          
+          <li class="md-meta__item">
+            
+              2 min read
+            
+          </li>
+        
+      </ul>
+      
+    </div>
+  </header>
+  <div class="md-post__content md-typeset">
+    <h2 id="telemetrix-under-the-hood-part-1"><a class="toclink" href="2025/05/20/telemetrix-under-the-hood--part-1/">Telemetrix Under The Hood  Part 1</a></h2>
+<p><img alt="" src="assets/images/under_the_hood.png" width="450" /></p>
+<p>Over the past few years, I've been developing the 
+Telemetrix family of libraries. These libraries, 
+designed to facilitate microcontroller programming, allow you to 
+control and monitor a variety of microcontrollers through a 
+standardized set of Python3 client APIs and associated microcontroller 
+servers written in C++.</p>
+
+    
+      <nav class="md-post__action">
+        <a href="2025/05/20/telemetrix-under-the-hood--part-1/">
+          Continue reading
+        </a>
+      </nav>
+    
+  </div>
+</article>
+      
+        <article class="md-post md-post--excerpt">
+  <header class="md-post__header">
+    
+    <div class="md-post__meta md-meta">
+      <ul class="md-meta__list">
+        <li class="md-meta__item">
+          <time datetime="2023-12-14 00:00:00+00:00">December 14, 2023</time></li>
         
           <li class="md-meta__item">
             in
@@ -507,11 +1005,8 @@ and found it highly stable and easy to use. Now that they support blog creation,
 I will give it a go. My hope is that it will encourage me to blog on a more regular 
 basis than I have in the past.
 Stay tuned!</p>
-    <nav class="md-post__action">
-      <a href="2023/12/14/welcome/">
-        Continue reading
-      </a>
-    </nav>
+
+    
   </div>
 </article>
       
@@ -537,12 +1032,36 @@ Stay tuned!</p>
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+        
+          
+          <a href="category/telemetrix-internals/" class="md-footer__link md-footer__link--next" aria-label="Next: Telemetrix Internals">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Telemetrix Internals
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2023 Alan Yorinks
+      Copyright &copy; 2023-2025 Alan Yorinks
 
     </div>
   
@@ -561,7 +1080,7 @@ Stay tuned!</p>
     
     
     <a href="mailto:MisterYsLab@gmail.com" target="_blank" rel="noopener" title="" class="md-social__link">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4l217.6 163.2c11.4 8.5 27 8.5 38.4 0l217.6-163.2c12.1-9.1 19.2-23.3 19.2-38.4 0-26.5-21.5-48-48-48H48zM0 176v208c0 35.3 28.7 64 64 64h384c35.3 0 64-28.7 64-64V176L294.4 339.2a63.9 63.9 0 0 1-76.8 0L0 176z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4l217.6 163.2c11.4 8.5 27 8.5 38.4 0l217.6-163.2c12.1-9.1 19.2-23.3 19.2-38.4 0-26.5-21.5-48-48-48zM0 176v208c0 35.3 28.7 64 64 64h384c35.3 0 64-28.7 64-64V176L294.4 339.2a63.9 63.9 0 0 1-76.8 0z"/></svg>
     </a>
   
     
@@ -572,7 +1091,18 @@ Stay tuned!</p>
       
     
     <a href="https://github.com/MrYsLab" target="_blank" rel="noopener" title="github.com" class="md-social__link">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/mryslab.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M111.8 62.2C170.2 105.9 233 194.7 256 242.4c23-47.6 85.8-136.4 144.2-180.2 42.1-31.6 110.3-56 110.3 21.8 0 15.5-8.9 130.5-14.1 149.2-18.2 64.8-84.4 81.4-143.3 71.3C456 322 482.2 380 425.6 438c-107.4 110.2-154.3-27.6-166.3-62.9-1.7-4.9-2.6-7.8-3.3-7.8s-1.6 3-3.3 7.8c-12 35.3-59 173.1-166.3 62.9-56.5-58-30.4-116 72.5-133.5C100 314.6 33.8 298 15.7 233.1 10.4 214.4 1.5 99.4 1.5 83.9c0-77.8 68.2-53.4 110.3-21.8z"/></svg>
     </a>
   
 </div>
@@ -587,10 +1117,14 @@ Stay tuned!</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+      
+      <script id="__config" type="application/json">{"base": ".", "features": ["navigation.footer", {"scheme": "slate", "toggle": {"icon": "material/brightness-4", "name": "Switch to light mode"}}], "search": "assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.d7c377c4.min.js"></script>
+      <script src="assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+        <script src="js/open_in_new_tab.js"></script>
       
     
   </body>
