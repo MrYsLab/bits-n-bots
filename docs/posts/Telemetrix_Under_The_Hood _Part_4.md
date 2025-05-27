@@ -1007,3 +1007,8 @@ implements all the report handlers.
 
 The code for the SONAR distance report is implemented
 [here.](https://github.com/MrYsLab/telemetrix-uno-r4/blob/39f89aef39351ca339d3a9f42b240031e22a9b21/telemetrix_uno_r4/minima/telemetrix_uno_r4_minima/telemetrix_uno_r4_minima.py#L2336)
+
+## The Next Posting
+
+We've completed the discussion of the Telemetrix API client. 
+In the next post, we will summarize how to add new features.

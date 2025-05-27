@@ -13,8 +13,6 @@ comments: true
 
 Let's quickly summarize the steps needed to add new features to Telemetrix.
 
-[Telemetrix messaging.](./Telemetrix_Under_The_Hood_Part_2.md/#message-types)
-
 <!-- more -->
 
 * Have a clear understanding of [Telemetrix messaging.](./Telemetrix_Under_The_Hood_Part_2.md)
