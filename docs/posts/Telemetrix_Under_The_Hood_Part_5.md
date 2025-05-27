@@ -13,10 +13,12 @@ comments: true
 
 Let's quickly summarize the steps needed to add new features to Telemetrix.
 
+[Telemetrix messaging.](./Telemetrix_Under_The_Hood_Part_2.md/#message-types)
+
 <!-- more -->
 
-* Have a clear understanding of [Telemetrix messaging.](.#telemetrix-under-the-hood-part-2)
-* Select an [Appropriate support](./telemetrix-under-the-hood-part-3/#a-feature-reference-point) library for 
+* Have a clear understanding of [Telemetrix messaging.](./Telemetrix_Under_The_Hood_Part_2.md)
+* Select an [Appropriate support](./Telemetrix_Under_The_Hood_Part_3.md/#using-an-established-arduino-library-for-device-support) library for 
   your device.
 ### Adding A New Command
   * Select a new command ID for the device.
